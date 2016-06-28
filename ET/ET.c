@@ -123,7 +123,6 @@ int vfield (double t, const double y[], double dy[], void *params) {
 ███████  ██████  ███████  ████   ███████ ██   ██
 */
 
-
 void ET(double input, FILE* fp, FILE* cp) {
 
   double begin = omp_get_wtime();
