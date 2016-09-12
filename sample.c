@@ -5,12 +5,33 @@
 #include <mpi.h>
 #include "ML.h"
 
+/*
+██ ███    ██ ██████  ██    ██ ████████
+██ ████   ██ ██   ██ ██    ██    ██
+██ ██ ██  ██ ██████  ██    ██    ██
+██ ██  ██ ██ ██      ██    ██    ██
+██ ██   ████ ██       ██████     ██
+*/
+
 #define NUM_PARS 2
 #define NUM_METRICS 2
+
+
 #define EXTENSION_LEN 35
 #define FILENAME_LEN 15 + EXTENSION_LEN
 
-int main(int argc, char *argv[]) {
+/*
+███    ███  █████  ██ ███    ██
+████  ████ ██   ██ ██ ████   ██
+██ ████ ██ ███████ ██ ██ ██  ██
+██  ██  ██ ██   ██ ██ ██  ██ ██
+██      ██ ██   ██ ██ ██   ████
+*/
+
+//TODO:0 Write readme file and print when syntax to run program is wrong
+//TODO:10 check if data/ directory exists. If not, create it
+
+int main(int argc, char** argv) {
 
 /***************initialize MPI environment**************************/
   int rank;
@@ -34,9 +55,11 @@ int main(int argc, char *argv[]) {
     integrate = 1;
   }
 
+  printf("sample = %d process = %d integrate = %d\n", sample,process,integrate);
+
   if (sample == 0 && process == 0 && integrate == 0) {
     fprintf(stderr,"Error: flags not set. Aborting...\n");
-    return -1;
+    return EXIT_FAILURE;
   }
 /*******************define parameter ranges************************/
   typedef struct Parameters {
@@ -67,6 +90,7 @@ pars[1].blocks = 2;
 pars[1].order = 4;
 pars[1].block_len = (pars[1].high - pars[1].low)/pars[1].blocks; // don't change
 pars[1].M = ((pars[1].order+1)>>1); // don't change
+
 
 /*****************define element grid***************************/
 // define element structure
@@ -113,6 +137,7 @@ for(k=0;k<num_elements;k++)
     elements[k].boundaries[j*2+1] = pars[j].block_len*(index[k][j]+1) + pars[j].low;
   }
 
+  printf("go jazz!\n");
 
 FILE* efp = fopen("data/element_key.dat","w");
 
@@ -267,7 +292,7 @@ for(j=0;j<NUM_PARS;j++)
         trace = fopen(tracestr, "r");
         processed = fopen(processedstr, "w");
         metric = fopen(metricstr, "w");
-        read(trace, processed, metric);
+        readTrace(trace, processed, metric);
         fclose(trace);
         fclose(processed);
         fclose(metric);
@@ -341,5 +366,5 @@ for(j=0;j<NUM_PARS;j++)
   }
 
   MPI_Finalize();
-  return 0;
+  return EXIT_SUCCESS;
 }

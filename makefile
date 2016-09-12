@@ -1,11 +1,12 @@
-objects = ML.o read.o sample.o abscissa.o
+objects = sample.o abscissa.o ML.o readTrace.o
 
-test: $(objects)
-	mpicc -o test $(objects) -lgsl -lgslcblas -lm -fopenmp
+sample: $(objects)
+	mpicc -o sample $(objects) -lgsl -lgslcblas -lm -fopenmp
 
 ML.o: ML.c
 	cc -c ML.c -lgsl -lgslcblas -lm
-read.o:
+readTrace.o: readTrace.c
+	cc -c readTrace.c
 sample.o: sample.c
 	mpicc -c sample.c -fopenmp
 abscissa.o: abscissa.c
@@ -13,4 +14,4 @@ abscissa.o: abscissa.c
 
 .PHONY: clean
 clean:
-	rm test $(objects)
+	rm sample $(objects)

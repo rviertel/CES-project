@@ -2,4 +2,7 @@
 ET
 test
 sample
+periodic
 data/*
+ET-Cell/Figures
+*.dat

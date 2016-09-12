@@ -1,5 +1,5 @@
-#ifndef BITONIC_H_INCLUDED
-#define BITONIC_H_INCLUDED
+#ifndef PARAMETERS_H_INCLUDED
+#define PARAMETERS_H_INCLUDED
 
 // Reversal potentials (mV)
 #define vL -62.5
@@ -13,10 +13,11 @@
 // #define gNa 29.17
 // #define gK 12.96
 // #define gH 20.0
-// #define gCaT 11.0213
+// #define gCaT 11.0213 or 15.0213
 // #define gNaP 8.3244
 // #define gHVA 2.0
 // #define gBK 5.0
+// #define gMystery 10.0
 
 #define gL 2.5
 #define gNa 29.17
@@ -61,7 +62,7 @@
 #define sigma_mH_T 4.44
 
 // BK
-#define wBK_base 50 //base time constant (ms)
+#define wBK_base 170 //base time constant (ms)
 
 // Ca
 #define Ca0 0.00002 // concentration of calcium (mM)

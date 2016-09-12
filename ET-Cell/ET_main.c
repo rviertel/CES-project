@@ -2,8 +2,27 @@
 #include <stdlib.h>
 #include <ctype.h>
 
-void ET(double input, FILE* fp, FILE* cp);
+
+typedef struct pars
+{
+  // 0 - constant input
+  // 1 - periodic input
+  int type;
+
+  // constant input
+  double input;
+
+  // periodic input
+  double frequency;
+  double amplitude;
+  double duty_cycle;
+} Pars;
+
+void ET(Pars* pars, FILE* fp, FILE* cp);
+// void ET(FILE* input, FILE* fp, FILE* cp);
 void processTrace(FILE* fp, FILE* op, double input);
+
+
 
 int main(int argc,char* argv[]) {
 
@@ -12,7 +31,7 @@ int main(int argc,char* argv[]) {
   FILE* cp = fopen("current.dat","w");
   char* check;
 
-  FILE *file;
+  FILE* file;
   if ((file = fopen("metrics.dat", "r")))
   {
       fclose(file);
@@ -22,7 +41,12 @@ int main(int argc,char* argv[]) {
   if(argc > 1)
   {
     input = strtod(argv[1], &check);
-    ET(input,fp,cp);
+
+    Pars input_pars;
+    input_pars.type = 0;
+    input_pars.input = input;
+
+    ET(&input_pars,fp,cp);
 
     fclose(fp);
     FILE* op = fopen("metrics.dat","a+");
@@ -34,7 +58,7 @@ int main(int argc,char* argv[]) {
     fclose(op);
   }
   else
-    fprintf(stderr, "syntax ./ET double\n");
+    fprintf(stderr, "syntax: ./ET input\n");
 
 
   return 0;

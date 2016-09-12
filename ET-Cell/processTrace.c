@@ -12,6 +12,9 @@
       __typeof__ (b) _b = (b); \
     _a < _b ? _a : _b; })
 
+// #define BURST_POINT 0.35
+#define SPIKE_POINT 0
+
 void processTrace(FILE* fp, FILE* op, double input)
 {
   //flags
@@ -23,8 +26,8 @@ void processTrace(FILE* fp, FILE* op, double input)
 
   double t, V, nK, hNaP, mH, mCaT, hCaT, wBK, Ca, nMystery, tau;
   double prev_V, prev_nK;
-  double burstStartTimes[100];
-  double burstEndTimes[100];
+  double burstStartTimes[1000];
+  double burstEndTimes[1000];
 
   //metrics
   double burstDuration = 0;
@@ -38,12 +41,13 @@ void processTrace(FILE* fp, FILE* op, double input)
   double valid_spikes = 0;
   double data_point_count = 0;
   int buffer = 4;
+  double BURST_POINT = 0.25 + (input*0.0003);
   // int burstcount;
 
   scan_status = fscanf (fp," %le %le %le %le %le %le %le %le %le %le %le\n",
           &t, &V, &nK, &hNaP, &mH, &mCaT, &hCaT, &wBK, &Ca, &nMystery, &tau);
 
-  if(nK > 0.23)
+  if(nK > BURST_POINT)
     burst_status = 2;
   else
     burst_status = 0;
@@ -57,7 +61,7 @@ void processTrace(FILE* fp, FILE* op, double input)
             &t, &V, &nK, &hNaP, &mH, &mCaT, &hCaT, &wBK, &Ca, &nMystery, &tau);
 
     // burst begins
-    if(prev_nK <= 0.23 && nK > 0.23 && buffer <= 0)
+    if(prev_nK <= BURST_POINT && nK > BURST_POINT && buffer <= 0)
     {
       bursting_has_begun = 1;
       burst_status = 1;
@@ -66,7 +70,7 @@ void processTrace(FILE* fp, FILE* op, double input)
 
     }
     // burst ends
-    if(prev_nK > 0.23 && nK <= 0.23)
+    if(prev_nK > BURST_POINT && nK <= BURST_POINT)
     {
       burst_status = 0;
       buffer--;
@@ -83,7 +87,7 @@ void processTrace(FILE* fp, FILE* op, double input)
     if(burst_status && bursting_has_begun)
     {
       //spike occurs
-      if(prev_V < 0 && V > 0)
+      if(prev_V < SPIKE_POINT && V > SPIKE_POINT)
       {
         spike_count++;
       }
@@ -92,11 +96,8 @@ void processTrace(FILE* fp, FILE* op, double input)
     if(V < mmp)
       mmp = V;
 
-    if(V < -40)
-    {
-      amp += V;
-      data_point_count++;
-    }
+    amp += V;
+    data_point_count++;
 
 
 

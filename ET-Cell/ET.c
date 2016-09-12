@@ -6,10 +6,48 @@
 #include <gsl/gsl_odeiv2.h>
 #include "parameters.h"
 
-#define TIME 5000.0
+#define TIME 5000
 #define NUM_EQ 9
 
 int vfield (double t, const double y[], double dy[], void *params);
+double squarewave(double t, double freq, double amp, double duty_cycle);
+
+typedef struct pars
+{
+  // 0 - constant input
+  // 1 - periodic input
+  int type;
+
+  // constant input
+  double input;
+
+  // periodic input
+  double frequency;
+  double amplitude;
+  double duty_cycle;
+} Pars;
+
+/*
+███████  ██████  ██    ██  █████  ██████  ███████ ██     ██  █████  ██    ██ ███████
+██      ██    ██ ██    ██ ██   ██ ██   ██ ██      ██     ██ ██   ██ ██    ██ ██
+███████ ██    ██ ██    ██ ███████ ██████  █████   ██  █  ██ ███████ ██    ██ █████
+     ██ ██ ▄▄ ██ ██    ██ ██   ██ ██   ██ ██      ██ ███ ██ ██   ██  ██  ██  ██
+███████  ██████   ██████  ██   ██ ██   ██ ███████  ███ ███  ██   ██   ████   ███████
+            ▀▀
+*/
+
+double squarewave(double t, double freq, double amp, double duty_cycle)
+{
+  double t_sec = t/1000;
+  double period = 1.0/freq;
+  double phase = fmod(t_sec,period)/period;
+
+  if(phase*100 < duty_cycle)
+    return amp;
+  else
+    return 0;
+}
+
 
 
 /*
@@ -23,6 +61,8 @@ int vfield (double t, const double y[], double dy[], void *params);
 
 int vfield (double t, const double y[], double dy[], void *params) {
 
+  // printf("go jazz\n");
+
   double V = y[0];
   double nK = y[1];
   double hNaP = y[2];
@@ -33,15 +73,27 @@ int vfield (double t, const double y[], double dy[], void *params) {
   double Ca = y[7];
   double nMystery = y[8];
 
-  double* pars = (double*)params;
+  Pars* input_pars = (Pars*)params;
+  double Input;
 
-  // get input
-  double Input = pars[0];
+
+  if((*input_pars).type == 0) //constant input
+    Input = (*input_pars).input;
+
+  if((*input_pars).type == 1) // periodic input
+  {
+    double freq, amp, duty_cycle;
+    freq = (*input_pars).frequency;
+    amp = (*input_pars).amplitude;
+    duty_cycle = (*input_pars).duty_cycle;
+    Input = squarewave(t,freq,amp,duty_cycle);
+  }
 
 
   // auxiliary quantities for BK channel
   double theta_wBK = -32.0 + 59.2*exp(-90.0*Ca) + 96.7*exp(-470.0*Ca);
   double p = 2.9 + 6.3*exp(-360*Ca);
+  // double p = 45.0/(1.0+exp(-(Ca - .05)/.007)); // value used when modulating SPB with BK
   double s = -25.3 + 107.5*exp(-120.0*Ca);
   double f = 1.0/(10.0*(exp(-(V+100.0-s)/63.6)+exp((-150.0+(V+100.0-s))/63.6))) - 5.2;
 
@@ -115,6 +167,9 @@ int vfield (double t, const double y[], double dy[], void *params) {
 //   return GSL_SUCCESS;
 // }
 
+
+
+
 /*
 ███████  ██████  ██     ██    ██ ███████ ██████
 ██      ██    ██ ██     ██    ██ ██      ██   ██
@@ -123,11 +178,12 @@ int vfield (double t, const double y[], double dy[], void *params) {
 ███████  ██████  ███████  ████   ███████ ██   ██
 */
 
-void ET(double input, FILE* fp, FILE* cp) {
+// void ET(Trace input_trace, FILE* fp, FILE* cp) {
+void ET(Pars* input_pars, FILE* fp, FILE* cp) {
 
   double begin = omp_get_wtime();
 
-  gsl_odeiv2_system sys = {vfield, NULL, NUM_EQ, &input};
+  gsl_odeiv2_system sys = {vfield, NULL, NUM_EQ, input_pars};
 
   gsl_odeiv2_driver * driver =
     gsl_odeiv2_driver_alloc_y_new (&sys, gsl_odeiv2_step_rk2,
@@ -187,6 +243,7 @@ void ET(double input, FILE* fp, FILE* cp) {
 
   gsl_odeiv2_driver_free (driver);
 
+
   // const gsl_odeiv_step_type * T
   //   = gsl_odeiv_step_rk8pd;
   //
@@ -239,3 +296,8 @@ void ET(double input, FILE* fp, FILE* cp) {
 
   fprintf(stdout, "%f\n", end-begin);
 }
+
+// void ET(FILE* input_file, FILE* fp, FILE* cp)
+// {
+//   //read input file and call ET from here with file data
+// }
