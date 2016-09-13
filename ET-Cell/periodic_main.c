@@ -1,27 +1,6 @@
-#include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
-
-
-typedef struct pars
-{
-  // 0 - constant input
-  // 1 - periodic input
-  int type;
-
-  // constant input
-  double input;
-
-  // periodic input
-  double frequency;
-  double amplitude;
-  double duty_cycle;
-} Pars;
-
-void ET(Pars* pars, FILE* fp, FILE* cp);
-// void ET(FILE* input, FILE* fp, FILE* cp);
-void processTrace(FILE* fp, FILE* op, double input);
-
+#include "ETCell.h"
 
 
 int main(int argc,char* argv[]) {
@@ -44,19 +23,19 @@ int main(int argc,char* argv[]) {
     amp = strtod(argv[2], &check);
     duty = strtod(argv[3], &check);
 
-    Pars input_pars;
-    input_pars.type = 1;
-    input_pars.frequency = freq;
-    input_pars.amplitude = amp;
-    input_pars.duty_cycle = duty;
+    InputData input_data;
+    input_data.type = 1;
+    input_data.frequency = freq;
+    input_data.amplitude = amp;
+    input_data.duty_cycle = duty;
 
-    ET(&input_pars,fp,cp);
+    ET(&input_data,fp,cp);
 
     fclose(fp);
     FILE* op = fopen("metrics.dat","a+");
     fp = fopen("ET.dat","r");
 
-    processTrace(fp, op, amp);
+    processTrace(fp, op, &input_data);
 
     fclose(fp);
     fclose(op);

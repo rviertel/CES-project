@@ -1,31 +1,16 @@
-#include <stdio.h>
 #include <math.h>
 #include <omp.h>
 #include <gsl/gsl_errno.h>
 #include <gsl/gsl_matrix.h>
 #include <gsl/gsl_odeiv2.h>
+#include "ETCell.h"
 #include "parameters.h"
 
-#define TIME 5000
+#define TIME 4200
 #define NUM_EQ 9
 
 int vfield (double t, const double y[], double dy[], void *params);
 double squarewave(double t, double freq, double amp, double duty_cycle);
-
-typedef struct pars
-{
-  // 0 - constant input
-  // 1 - periodic input
-  int type;
-
-  // constant input
-  double input;
-
-  // periodic input
-  double frequency;
-  double amplitude;
-  double duty_cycle;
-} Pars;
 
 /*
 ███████  ██████  ██    ██  █████  ██████  ███████ ██     ██  █████  ██    ██ ███████
@@ -73,19 +58,19 @@ int vfield (double t, const double y[], double dy[], void *params) {
   double Ca = y[7];
   double nMystery = y[8];
 
-  Pars* input_pars = (Pars*)params;
+  InputData* input_data = (InputData*)params;
   double Input;
 
 
-  if((*input_pars).type == 0) //constant input
-    Input = (*input_pars).input;
+  if((*input_data).type == 0) //constant input
+    Input = (*input_data).input;
 
-  if((*input_pars).type == 1) // periodic input
+  if((*input_data).type == 1) // periodic input
   {
     double freq, amp, duty_cycle;
-    freq = (*input_pars).frequency;
-    amp = (*input_pars).amplitude;
-    duty_cycle = (*input_pars).duty_cycle;
+    freq = (*input_data).frequency;
+    amp = (*input_data).amplitude;
+    duty_cycle = (*input_data).duty_cycle;
     Input = squarewave(t,freq,amp,duty_cycle);
   }
 
@@ -149,25 +134,6 @@ int vfield (double t, const double y[], double dy[], void *params) {
   return GSL_SUCCESS;
 }
 
-// int
-// jac (double t, const double y[], double *dfdy,
-//      double dfdt[], void *params)
-// {
-//   (void)(t); /* avoid unused parameter warning */
-//   double mu = *(double *)params;
-//   gsl_matrix_view dfdy_mat
-//     = gsl_matrix_view_array (dfdy, 8, 8);
-//   gsl_matrix * m = &dfdy_mat.matrix;
-//   gsl_matrix_set (m, 0, 0, 0.0);
-//   gsl_matrix_set (m, 0, 1, 1.0);
-//   gsl_matrix_set (m, 1, 0, -2.0*mu*y[0]*y[1] - 1.0);
-//   gsl_matrix_set (m, 1, 1, -mu*(y[0]*y[0] - 1.0));
-//   dfdt[0] = 0.0;
-//   dfdt[1] = 0.0;
-//   return GSL_SUCCESS;
-// }
-
-
 
 
 /*
@@ -179,11 +145,11 @@ int vfield (double t, const double y[], double dy[], void *params) {
 */
 
 // void ET(Trace input_trace, FILE* fp, FILE* cp) {
-void ET(Pars* input_pars, FILE* fp, FILE* cp) {
+void ET(InputData* input_data, FILE* fp, FILE* cp) {
 
   double begin = omp_get_wtime();
 
-  gsl_odeiv2_system sys = {vfield, NULL, NUM_EQ, input_pars};
+  gsl_odeiv2_system sys = {vfield, NULL, NUM_EQ, input_data};
 
   gsl_odeiv2_driver * driver =
     gsl_odeiv2_driver_alloc_y_new (&sys, gsl_odeiv2_step_rk2,
@@ -243,61 +209,7 @@ void ET(Pars* input_pars, FILE* fp, FILE* cp) {
 
   gsl_odeiv2_driver_free (driver);
 
-
-  // const gsl_odeiv_step_type * T
-  //   = gsl_odeiv_step_rk8pd;
-  //
-  // gsl_odeiv_step * s
-  //   = gsl_odeiv_step_alloc (T, NUM_EQ);
-  // gsl_odeiv_control * c
-  //   = gsl_odeiv_control_y_new (1e-6, 0.0);
-  // gsl_odeiv_evolve * e
-  //   = gsl_odeiv_evolve_alloc (NUM_EQ);
-  //
-  // double input;
-  //
-  // sscanf(argv[1],"%lf",&input);
-  //
-  // gsl_odeiv_system sys = {vfield, NULL, NUM_EQ, &input};
-  //
-  // int i;
-  // int status;
-  // double t = 0.0, t1 = 1000.0; //time in ms
-  // double h = 1e-6;
-  // double y[NUM_EQ] = {-51.7045, 0.0531, 0.0604, 0.1720, 0.0460, 0.2084, 0.1292, 0.0005};
-  // FILE* fp = fopen("ET.dat","w");
-  //
-  // for (i = 0; i <= 12000; i++)
-  //   {
-  //     double ti = i * t1 / 12000.0;
-  //     while (t < ti)
-  //       {
-  //         status = gsl_odeiv_evolve_apply (e, c, s,
-  //                                              &sys,
-  //                                              &t, t1,
-  //                                              &h, y);
-  //
-  //         if (status != GSL_SUCCESS)
-  //             break;
-  //
-  //
-  //       }
-  //       // output to file. 17 significant digits for full double precision
-  //       fprintf(fp, "%.17e %.17e %.17e %.17e %.17e %.17e %.17e %.17e %.17e\n"
-  //       ,t, y[0], y[1],y[2], y[3], y[4], y[5], y[6], y[7]);
-  //   }
-  //
-  //
-  // gsl_odeiv_evolve_free (e);
-  // gsl_odeiv_control_free (c);
-  // gsl_odeiv_step_free (s);
-
   double end = omp_get_wtime();
 
   fprintf(stdout, "%f\n", end-begin);
 }
-
-// void ET(FILE* input_file, FILE* fp, FILE* cp)
-// {
-//   //read input file and call ET from here with file data
-// }
