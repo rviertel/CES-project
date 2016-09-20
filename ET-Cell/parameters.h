@@ -2,7 +2,14 @@
 #define PARAMETERS_H_INCLUDED
 
 // Reversal potentials (mV)
-#define vL -62.5
+// #define vL -62.5
+// #define vNa 45.0
+// #define vK -105.0
+// #define vH -35.0
+// #define vCa 120.0
+
+// Reversal potentials (mV)
+#define vL -62.5  // 17.5 -9.5 -35.5 -56.5 -68.5
 #define vNa 45.0
 #define vK -105.0
 #define vH -35.0

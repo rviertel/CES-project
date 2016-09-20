@@ -9,6 +9,4 @@ void ML(void* pars, size_t num_pars, FILE* fp);
 
 void readTrace(FILE* trace, FILE* spikes, FILE* metrics);
 
-int abscissa(int n, double *x, double *w);
-
 #endif

@@ -4,6 +4,12 @@
 #include "ETCell.h"
 
 #define SPIKE_POINT 0
+#define PI 3.1415926535897932384626433832795028841971693993751
+
+#define min(a,b) \
+  ({ __typeof__ (a) _a = (a); \
+      __typeof__ (b) _b = (b); \
+    _a < _b ? _a : _b; })
 
 void processTrace(FILE* fp, FILE* op, InputData* input_data)
 {
@@ -42,7 +48,6 @@ void processTrace(FILE* fp, FILE* op, InputData* input_data)
   int buffer = 4;
   double BURST_POINT;
 
-  //TODO: think about how to count when a burst starts. This could be a data integrity issue if not resolved before running the final simulation
   if((*input_data).type == 0)
     BURST_POINT = 0.25 + ((*input_data).input*0.0003);
   else
@@ -78,7 +83,7 @@ void processTrace(FILE* fp, FILE* op, InputData* input_data)
           double freq = (*input_data).frequency;
           double period = 1.0/freq;
           double t_sec = t/1000.0;
-          phase = fmod(t_sec,period)/period;
+          phase = fmod(t_sec,period)/period*2*PI;
         }
       }
     }

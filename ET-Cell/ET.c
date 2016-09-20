@@ -6,7 +6,7 @@
 #include "ETCell.h"
 #include "parameters.h"
 
-#define TIME 4200
+#define TIME 5000
 #define NUM_EQ 9
 
 int vfield (double t, const double y[], double dy[], void *params);
@@ -45,8 +45,6 @@ double squarewave(double t, double freq, double amp, double duty_cycle)
 
 
 int vfield (double t, const double y[], double dy[], void *params) {
-
-  // printf("go jazz\n");
 
   double V = y[0];
   double nK = y[1];
