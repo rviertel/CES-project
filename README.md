@@ -12,8 +12,8 @@ There are 3 optional arguments (though at least one is necessary) to run uq.
 
 To build, use the makefile. Note that openMP and MPI are required. You may need to change the flags in the makefile to include any necessary flags to compile the system of ODEs along with the solver. For example, in the example script, -lgsl -lgslcblas, and -lm are used.
 
-To run, typedef
+To run, type
 
-mpirun -N <int> [flags]
+mpirun -N <int> uq [flags]
 
 where <int> specifies the number of nodes that will be used to sample and integrate, and [flags] are one of the three flags specified above.
