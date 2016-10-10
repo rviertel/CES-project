@@ -1,7 +1,7 @@
 objects = sample.o abscissa.o ML.o readTrace.o
 
-sample: $(objects)
-	mpicc -o sample $(objects) -lgsl -lgslcblas -lm -fopenmp
+uq: $(objects)
+	mpicc -o uq $(objects) -lgsl -lgslcblas -lm -fopenmp
 
 ML.o: ML.c
 	cc -c ML.c -lgsl -lgslcblas -lm
@@ -14,4 +14,4 @@ abscissa.o: abscissa.c
 
 .PHONY: clean
 clean:
-	rm sample $(objects)
+	rm uq $(objects)

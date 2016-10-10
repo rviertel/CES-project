@@ -6,3 +6,4 @@ periodic
 data/*
 ET-Cell/Figures
 *.dat
+.imdone/

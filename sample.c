@@ -5,6 +5,8 @@
 #include <mpi.h>
 #include "ML.h"
 
+int abscissa(int n, double *x, double *w);
+
 /*
 ██ ███    ██ ██████  ██    ██ ████████
 ██ ████   ██ ██   ██ ██    ██    ██
@@ -58,7 +60,7 @@ int main(int argc, char** argv) {
   printf("sample = %d process = %d integrate = %d\n", sample,process,integrate);
 
   if (sample == 0 && process == 0 && integrate == 0) {
-    fprintf(stderr,"Error: flags not set. Aborting...\n");
+    fprintf(stderr,"Error: flags not set. -s (sample), -p (process), or -i (integrate) required. Aborting...\n");
     return EXIT_FAILURE;
   }
 /*******************define parameter ranges************************/
@@ -136,8 +138,6 @@ for(k=0;k<num_elements;k++)
     elements[k].boundaries[j*2] = pars[j].block_len*index[k][j] + pars[j].low;
     elements[k].boundaries[j*2+1] = pars[j].block_len*(index[k][j]+1) + pars[j].low;
   }
-
-  printf("go jazz!\n");
 
 FILE* efp = fopen("data/element_key.dat","w");
 
