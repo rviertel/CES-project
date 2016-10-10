@@ -14,6 +14,6 @@ To build, use the makefile. Note that openMP and MPI are required. You may need 
 
 To run, type
 
-mpirun -N <int> uq [flags]
+mpirun -N int uq [flags]
 
-where <int> specifies the number of nodes that will be used to sample and integrate, and [flags] are one of the three flags specified above.
+where int specifies the number of nodes that will be used to sample and integrate, and [flags] are one of the three flags specified above.
