@@ -2,46 +2,77 @@
 #include <omp.h>
 #include "ETCell.h"
 
+#define DUTY_CYCLE 70
+#define MAX_i 25
+#define MAX_j 10
+#define MAX_k 5
+
 int main(int argc,char* argv[]) {
 
   InputData input_data;
 
-  int i;
+  int i,j,k;
+  double ex_in[] = {-15,14,67,137,205};
+
 
   FILE *file;
-  if ((file = fopen("metrics.dat", "r")))
+  if ((file = fopen("data/metrics.dat", "r")))
   {
       fclose(file);
-      remove("metrics.dat");
+      remove("data/metrics.dat");
   }
 
-  for(i = 1; i <=10 ; i++)
+  for(k = 1;k <= MAX_k; k++)
   {
-    char trace[100];
-    char current[100];
+    for(j = 1; j <= MAX_j; j++)
+    {
+      for(i = 0; i <= MAX_i ; i++)
+      {
+        char trace[100];
+        char current[100];
+        char metrics[100];
 
-    sprintf(trace,"ET.dat");
-    sprintf(current,"current.dat");
+        int simulate = 0;
 
-    FILE* fp = fopen(trace, "w");
-    FILE* cp = fopen(current, "w");
+        sprintf(trace,"data/%dhz%d/ET_%d_%d.dat",k,DUTY_CYCLE,j,i*10);
+        sprintf(current,"data/%dhz%d/current_%d_%d.dat",k,DUTY_CYCLE,j,i*10);
+        sprintf(metrics,"data/%dhz%d/metrics.dat",k,DUTY_CYCLE);
 
-    input_data.type = 1;
-    input_data.frequency = i;
-    input_data.amplitude = 20;
-    input_data.duty_cycle = 15;
+        if (!(file = fopen(trace, "r")))
+        {
+          simulate = 1;
+        }
+        else
+          fclose(file);
 
-    ET(&input_data,fp,cp);
 
-    fclose(fp);
+        input_data.type = 1;
+        input_data.frequency = j;
+        input_data.amplitude = 10*i;
+        input_data.duty_cycle = DUTY_CYCLE;
+        input_data.input = ex_in[k-1];
 
-    fp = fopen(trace, "r");
-    FILE* op = fopen("metrics.dat","a+");
+        if(simulate)
+        {
+          FILE* fp = fopen(trace, "w");
+          FILE* cp = fopen(current, "w");
+          ET(&input_data,fp,cp,ex_in[k-1]);
+          fclose(fp);
+          fclose(cp);
+        }
 
-    processTrace(fp, op, &input_data);
 
-    fclose(fp);
-    fclose(op);
+        FILE* fp = fopen(trace, "r");
+        FILE* op = fopen(metrics,"a+");
+
+        processTrace(fp, op, &input_data);
+
+        fclose(fp);
+        fclose(op);
+
+        printf("%d of %d iterations. frequency: %d amplitude: %d\n", (j-1)*(MAX_i+1) + i + 1 + (k-1)*(MAX_i+1)*MAX_j,(MAX_i+1)*MAX_j*MAX_k,j,i*10);
+      }
+    }
   }
 
 

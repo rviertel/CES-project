@@ -19,7 +19,7 @@ typedef struct inputdata
   double duty_cycle;
 } InputData;
 
-void ET(InputData* pars, FILE* fp, FILE* cp);
+void ET(InputData* pars, FILE* fp, FILE* cp,double Iex);
 void processTrace(FILE* fp, FILE* op, InputData* input_data);
 
 #endif

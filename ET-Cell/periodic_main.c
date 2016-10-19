@@ -29,7 +29,7 @@ int main(int argc,char* argv[]) {
     input_data.amplitude = amp;
     input_data.duty_cycle = duty;
 
-    ET(&input_data,fp,cp);
+    ET(&input_data,fp,cp,0);
 
     fclose(fp);
     FILE* op = fopen("metrics.dat","a+");

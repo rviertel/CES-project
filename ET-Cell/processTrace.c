@@ -170,10 +170,15 @@ void processTrace(FILE* fp, FILE* op, InputData* input_data)
 
   amp = amp/data_point_count;
 
+  int synched = 0;
+
+  if(vector_strength > .9 && abs(burstFrequency - (*input_data).frequency) < .05)
+    synched = 1;
+
   if((*input_data).type == 0)
     fprintf(op,"%.17e %.17e %.17e %.17e %.17e %.17e %.17e %.17e\n", (*input_data).input, burstDuration,burstFrequency,spikesPerBurst, mmp, amp, average_peak_firing_rate, average_firing_rate);
   else if((*input_data).type == 1)
-    fprintf(op,"%.17e %.17e %.17e %.17e %.17e %.17e %.17e %.17e %.17e %.17e %.17e %.17e\n", (*input_data).frequency, (*input_data).amplitude, (*input_data).duty_cycle, burstDuration, burstFrequency, spikesPerBurst, mmp, amp, average_peak_firing_rate, average_firing_rate, vector_strength, mean_phase);
+    fprintf(op,"%.17e %.17e %.17e %.17e %.17e %.17e %.17e %.17e %.17e %.17e %.17e %.17e %d\n", (*input_data).frequency, (*input_data).amplitude, (*input_data).duty_cycle, burstDuration, burstFrequency, spikesPerBurst, mmp, amp, average_peak_firing_rate, average_firing_rate, vector_strength, mean_phase, synched);
 
 
 } // processTrace()

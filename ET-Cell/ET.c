@@ -57,7 +57,7 @@ int vfield (double t, const double y[], double dy[], void *params) {
   double nMystery = y[8];
 
   InputData* input_data = (InputData*)params;
-  double Input;
+  double Input, Iex = 0;
 
 
   if((*input_data).type == 0) //constant input
@@ -70,6 +70,7 @@ int vfield (double t, const double y[], double dy[], void *params) {
     amp = (*input_data).amplitude;
     duty_cycle = (*input_data).duty_cycle;
     Input = squarewave(t,freq,amp,duty_cycle);
+    Iex = (*input_data).input;
   }
 
 
@@ -119,7 +120,7 @@ int vfield (double t, const double y[], double dy[], void *params) {
   double IBK = gBK*wBK*(V-vK);
 
 
-  dy[0] = -(INa + IK + ICaT + IH + INaP + IL + IHVA + IBK + Imystery - Input)/C;
+  dy[0] = -(INa + IK + ICaT + IH + INaP + IL + IHVA + IBK + Imystery - Input - Iex)/C;
   dy[1] = (nK_inf-nK)/nK_tau;
   dy[2] = (hNaP_inf-hNaP)/hNaP_tau;
   dy[3] = (mH_inf-mH)/mH_tau;
@@ -142,8 +143,10 @@ int vfield (double t, const double y[], double dy[], void *params) {
 ███████  ██████  ███████  ████   ███████ ██   ██
 */
 
-// void ET(Trace input_trace, FILE* fp, FILE* cp) {
-void ET(InputData* input_data, FILE* fp, FILE* cp) {
+void ET(InputData* input_data, FILE* fp, FILE* cp, double Iex) {
+
+  if((*input_data).type == 1)
+    (*input_data).input = Iex;
 
   double begin = omp_get_wtime();
 

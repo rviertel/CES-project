@@ -11,4 +11,4 @@ sample:sample_main.c ET.c processTrace.c parameters.h
 
 .PHONY: clean
 clean:
-	rm ET sample periodic metrics.dat *.o
+	rm ET sample periodic

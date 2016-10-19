@@ -25,7 +25,7 @@ int main(int argc,char* argv[]) {
     input_data.type = 0;
     input_data.input = input;
 
-    ET(&input_data,fp,cp);
+    ET(&input_data,fp,cp,0);
 
     fclose(fp);
     FILE* op = fopen("metrics.dat","a+");

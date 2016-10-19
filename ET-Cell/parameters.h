@@ -81,5 +81,6 @@
 // other parameters
 #define C 21.0 // capacitance (microF/cm^2)
 #define F 96485.0 //Faraday's constant (C/mol)
+// #define Iex -15 //-15 14 67 137 205
 
 #endif
