@@ -3,7 +3,8 @@ ET
 test
 uq
 periodic
-data/*
+data
 ET-Cell/Figures
+ET-Cell/histogram
 *.dat
 .imdone/

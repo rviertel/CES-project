@@ -4,16 +4,16 @@ The user must specify the number of parameters and parameter ranges, as well as 
 
 sampling data, and final metric data will be stored in a directory named "data".
 
-There are 3 optional arguments (though at least one is necessary) to run uq.
+One of the following three arguments is necessary to run uq.
 
--s -- Sample over the parameter space by integrating at each Guassian quadrature point.
--p -- Process the raw traces of the ODE system, to get data that will be used in the integration
--i -- Integrate to compute statistical moments of the processed data. Mean and variance will be computed for each metric over each block of parameter space.
+-s -- Sample at each grid point, process raw trace data, and integrate processed data.
+-p -- Process and integrate only
+-i -- Integrate only
 
 To build, use the makefile. Note that openMP and MPI are required. You may need to change the flags in the makefile to include any necessary flags to compile the system of ODEs along with the solver. For example, in the example script, -lgsl -lgslcblas, and -lm are used.
 
 To run, type
 
-mpirun -N int uq [flags]
+mpirun -N int uq [flag]
 
 where int specifies the number of nodes that will be used to sample and integrate, and [flags] are one of the three flags specified above.
