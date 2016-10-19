@@ -90,7 +90,7 @@ int main(int argc, char** argv) {
   }
 
 
-  DIR* dir = opendir("data");
+  DIR* dir = opendir("/scratch/local/u0452198/data");
   if (dir)
   {
       /* Directory exists. */
@@ -99,7 +99,7 @@ int main(int argc, char** argv) {
   else if (ENOENT == errno)
   {
       /* Directory does not exist. */
-      mkdir("data", 0700);
+      mkdir("/scratch/local/u0452198/data", 0700);
   }
   else
   {
@@ -224,7 +224,7 @@ for(k=0;k<num_elements;k++)
     elements[k].boundaries[j*2+1] = pars[j].block_len*(index[k][j]+1) + pars[j].low;
   }
 
-FILE* efp = fopen("data/element_key.dat","w");
+FILE* efp = fopen("/scratch/local/u0452198/data/element_key.dat","w");
 
 //print element boundaries
 if (rank == 0)
@@ -345,7 +345,7 @@ for (k = start; k < end; k++)
     }
 
     char estr[40];
-    sprintf(estr,"data/grid_key_eid_%d.dat",k);
+    sprintf(estr,"/scratch/local/u0452198/data/grid_key_eid_%d.dat",k);
     FILE* gfp = fopen(estr,"w");
 
     // print grid points to file
@@ -383,13 +383,13 @@ for (k = start; k < end; k++)
       // name data files
       sprintf(str, "_eid_%d_gid_%d.dat", k,i);
 
-      sprintf(tracestr,"data/trace");
+      sprintf(tracestr,"/scratch/local/u0452198/data/trace");
       strcat(tracestr, str);
 
-      sprintf(currentstr,"data/current");
+      sprintf(currentstr,"/scratch/local/u0452198/data/current");
       strcat(currentstr, str);
 
-      sprintf(metricstr,"data/metric");
+      sprintf(metricstr,"/scratch/local/u0452198/data/metric");
       strcat(metricstr, str);
 
       // sample
@@ -468,7 +468,7 @@ for (k = start; k < end; k++)
   }
 
   char mstr[40];
-  sprintf(mstr,"data/moments_eid_%d.dat",k);
+  sprintf(mstr,"/scratch/local/u0452198/data/moments_eid_%d.dat",k);
   FILE* vp = fopen(mstr,"w");
 
   for(i=0;i<NUM_METRICS;i++)
