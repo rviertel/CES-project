@@ -207,6 +207,6 @@ void uq_ET(double* parameters,int num_pars, FILE* fp, FILE* cp) {
   gsl_odeiv2_driver_free (driver);
 
   // double end = omp_get_wtime();
-
+  //
   // fprintf(stdout, "%f\n", end-begin);
 }
