@@ -397,11 +397,18 @@ for (k = start; k < end; k++)
       // sample
       if (sample == 1)
       {
-        trace = fopen(tracestr, "w");
-        current = fopen(currentstr, "w");
-        uq_ET(quad_grid[i],NUM_PARS,trace,current);
-        fclose(trace);
-        fclose(current);
+        if((trace = fopen(tracestr, "r")))
+        {
+          fclose(trace);
+        }
+        else
+        {
+          trace = fopen(tracestr, "w");
+          current = fopen(currentstr, "w");
+          uq_ET(quad_grid[i],NUM_PARS,trace,current);
+          fclose(trace);
+          fclose(current);
+        }
       }
 
       // process
