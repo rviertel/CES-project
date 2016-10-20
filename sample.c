@@ -224,21 +224,23 @@ for(k=0;k<num_elements;k++)
     elements[k].boundaries[j*2+1] = pars[j].block_len*(index[k][j]+1) + pars[j].low;
   }
 
-FILE* efp = fopen("data/element_key.dat","w");
 
 //print element boundaries
 if (rank == 0)
+{
+  FILE* efp = fopen("data/element_key.dat","w");
   for(k=0;k<num_elements;k++)
   {
     fprintf(efp,"%d ", k);
     for(j=0;j<NUM_PARS;j++)
-      fprintf(efp,"%d ", index[k][j]);
+    fprintf(efp,"%d ", index[k][j]);
     for(j=0;j<NUM_PARS*2;j++)
-      fprintf(efp,"%f ", elements[k].boundaries[j]);
+    fprintf(efp,"%f ", elements[k].boundaries[j]);
     fprintf(efp,"\n");
   }
+  fclose(efp);
+}
 
-fclose(efp);
 
 if(rank == 0)
   fprintf(stderr, "\t===> Done\n");
