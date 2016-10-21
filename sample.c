@@ -454,11 +454,13 @@ for (k = start; k < end; k++)
   /***********Calculate Mean and Variance for the Element*************/
 
   for(j=0;j<NUM_PARS;j++)
+  {
     for(i=0;i<NUM_METRICS;i++)
     {
       sum[i] = A[j]*sum[i];
       sumsum[i] = A[j]*sumsum[i];
     }
+  }
 
   for(i=0;i<NUM_METRICS;i++)
   {
@@ -466,17 +468,16 @@ for (k = start; k < end; k++)
     variance[i] = sumsum[i]/volume - mean[i]*mean[i];
   }
 
+  // print output to file
+  char mstr[40];
+  sprintf(mstr,"data/moments_eid_%d.dat",k);
+  FILE* vp = fopen(mstr,"w");
 
-  if(rank == 0)
-  {
-    char mstr[40];
-    sprintf(mstr,"data/moments_eid_%d.dat",k);
-    FILE* vp = fopen(mstr,"w");
-
-    for(i=0;i<NUM_METRICS;i++)
+  for(i=0;i<NUM_METRICS;i++)
     fprintf(vp,"%.17le %.17le", mean[i], variance[i]);
-    printf("\n");
-  }
+  printf("\n");
+
+  fclose(vp);
 
 }
 
