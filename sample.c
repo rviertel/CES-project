@@ -466,13 +466,17 @@ for (k = start; k < end; k++)
     variance[i] = sumsum[i]/volume - mean[i]*mean[i];
   }
 
-  char mstr[40];
-  sprintf(mstr,"data/moments_eid_%d.dat",k);
-  FILE* vp = fopen(mstr,"w");
 
-  for(i=0;i<NUM_METRICS;i++)
+  if(rank == 0)
+  {
+    char mstr[40];
+    sprintf(mstr,"data/moments_eid_%d.dat",k);
+    FILE* vp = fopen(mstr,"w");
+
+    for(i=0;i<NUM_METRICS;i++)
     fprintf(vp,"%.17le %.17le", mean[i], variance[i]);
-  printf("\n");
+    printf("\n");
+  }
 
 }
 
