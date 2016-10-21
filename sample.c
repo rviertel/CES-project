@@ -21,7 +21,7 @@ int abscissa(int n, double *x, double *w);
 #define NUM_PARS 4
 #define NUM_METRICS 7
 #define BLOCKS 5
-#define ORDER 3
+#define ORDER 5
 
 
 #define EXTENSION_LEN 35
@@ -90,7 +90,7 @@ int main(int argc, char** argv) {
   }
 
 
-  DIR* dir = opendir("data");
+  DIR* dir = opendir("data2");
   if (dir)
   {
       /* Directory exists. */
@@ -99,7 +99,7 @@ int main(int argc, char** argv) {
   else if (ENOENT == errno)
   {
       /* Directory does not exist. */
-      mkdir("data", 0700);
+      mkdir("data2", 0700);
   }
   else
   {
@@ -220,7 +220,7 @@ for(k=0;k<num_elements;k++)
 //print element boundaries
 if (rank == 0)
 {
-  FILE* efp = fopen("data/element_key.dat","w");
+  FILE* efp = fopen("data2/element_key.dat","w");
   for(k=0;k<num_elements;k++)
   {
     fprintf(efp,"%d ", k);
@@ -339,7 +339,7 @@ for (k = start; k < end; k++)
     }
 
     char estr[40];
-    sprintf(estr,"data/grid_key_eid_%d.dat",k);
+    sprintf(estr,"data2/grid_key_eid_%d.dat",k);
     FILE* gfp = fopen(estr,"w");
 
     // print grid points to file
@@ -377,10 +377,10 @@ for (k = start; k < end; k++)
       // name data files
       sprintf(str, "_eid_%d_gid_%d.dat", k,i);
 
-      sprintf(tracestr,"data/trace");
+      sprintf(tracestr,"data2/trace");
       strcat(tracestr, str);
 
-      sprintf(metricstr,"data/metric");
+      sprintf(metricstr,"data2/metric");
       strcat(metricstr, str);
 
       // sample
@@ -470,7 +470,7 @@ for (k = start; k < end; k++)
 
   // print output to file
   char mstr[40];
-  sprintf(mstr,"data/moments_eid_%d.dat",k);
+  sprintf(mstr,"data2/moments_eid_%d.dat",k);
   FILE* vp = fopen(mstr,"w");
 
   for(i=0;i<NUM_METRICS;i++)
