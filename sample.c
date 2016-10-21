@@ -474,7 +474,7 @@ for (k = start; k < end; k++)
   FILE* vp = fopen(mstr,"w");
 
   for(i=0;i<NUM_METRICS;i++)
-    fprintf(vp,"%.17le %.17le", mean[i], variance[i]);
+    fprintf(vp,"%.17le %.17le\n", mean[i], variance[i]);
   printf("\n");
 
   fclose(vp);
