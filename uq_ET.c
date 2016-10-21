@@ -1,11 +1,11 @@
 #include <math.h>
 // #include <omp.h>
-// #include "/uufs/chpc.utah.edu/sys/installdir/gsl/2.2.1/include/gsl/gsl_errno.h"
-// #include "/uufs/chpc.utah.edu/sys/installdir/gsl/2.2.1/include/gsl/gsl_matrix.h"
-// #include "/uufs/chpc.utah.edu/sys/installdir/gsl/2.2.1/include/gsl/gsl_odeiv2.h"
-#include <gsl/gsl_errno.h>
-#include <gsl/gsl_matrix.h>
-#include <gsl/gsl_odeiv2.h>
+#include "/uufs/chpc.utah.edu/sys/installdir/gsl/2.2.1/include/gsl/gsl_errno.h"
+#include "/uufs/chpc.utah.edu/sys/installdir/gsl/2.2.1/include/gsl/gsl_matrix.h"
+#include "/uufs/chpc.utah.edu/sys/installdir/gsl/2.2.1/include/gsl/gsl_odeiv2.h"
+// #include <gsl/gsl_errno.h>
+// #include <gsl/gsl_matrix.h>
+// #include <gsl/gsl_odeiv2.h>
 #include "uq_ETCell.h"
 #include "uq_parameters.h"
 
