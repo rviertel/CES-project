@@ -3,7 +3,7 @@
 
 #include <stdio.h>
 
-void uq_ET(double* pars, int num_pars, FILE* fp, FILE* cp);
+void uq_ET(double* pars, int num_pars, FILE* fp);
 void uq_processTrace(FILE* fp, FILE* op);
 
 #endif

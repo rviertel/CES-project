@@ -1,8 +1,11 @@
 #include <math.h>
 // #include <omp.h>
-#include "/uufs/chpc.utah.edu/sys/installdir/gsl/2.2.1/include/gsl/gsl_errno.h"
-#include "/uufs/chpc.utah.edu/sys/installdir/gsl/2.2.1/include/gsl/gsl_matrix.h"
-#include "/uufs/chpc.utah.edu/sys/installdir/gsl/2.2.1/include/gsl/gsl_odeiv2.h"
+// #include "/uufs/chpc.utah.edu/sys/installdir/gsl/2.2.1/include/gsl/gsl_errno.h"
+// #include "/uufs/chpc.utah.edu/sys/installdir/gsl/2.2.1/include/gsl/gsl_matrix.h"
+// #include "/uufs/chpc.utah.edu/sys/installdir/gsl/2.2.1/include/gsl/gsl_odeiv2.h"
+#include <gsl/gsl_errno.h>
+#include <gsl/gsl_matrix.h>
+#include <gsl/gsl_odeiv2.h>
 #include "uq_ETCell.h"
 #include "uq_parameters.h"
 
@@ -61,8 +64,7 @@ int vfield (double t, const double y[], double dy[], void *params) {
   double gH = conductances[0];
   double gCaT = conductances[1];
   double gNaP = conductances[2];
-  double gHVA = conductances[3];
-  double gBK = conductances[4];
+  double gBK = conductances[3];
 
 
   // auxiliary quantities for BK channel
@@ -134,15 +136,7 @@ int vfield (double t, const double y[], double dy[], void *params) {
 ███████  ██████  ███████  ████   ███████ ██   ██
 */
 
-void uq_ET(double* parameters,int num_pars, FILE* fp, FILE* cp) {
-
-  double* conductances = (double*)parameters;
-
-  double gH = conductances[0];
-  double gCaT = conductances[1];
-  double gNaP = conductances[2];
-  double gHVA = conductances[3];
-  double gBK = conductances[4];
+void uq_ET(double* parameters,int num_pars, FILE* fp) {
 
   // double begin = omp_get_wtime();
 
@@ -178,28 +172,9 @@ void uq_ET(double* parameters,int num_pars, FILE* fp, FILE* cp) {
       double nMystery = y[8];
       double tau = 1000/(1.0+exp(-(V+35))) + 200;
 
-      double mMystery = 1.0/(1.0+exp((V-theta_nK)/sigma_nK));
-      double mNa_inf = 1.0/(1.0+exp((V-theta_mNa)/sigma_mNa));
-      double mHVA_inf = 1.0/(1.0+exp(-(V + 10.0)/6.5));
-      double mNaP_inf = 1.0/(1.0+exp((V-theta_mNaP)/sigma_mNaP));
-
-
-      double INa = gNa*(1.0-nK)*mNa_inf*mNa_inf*mNa_inf*(V-vNa); //2
-      double IK = gK*nK*nK*nK*nK*(V-vK); //3
-      double IL = gL*(V-vL); //4
-      double IH = gH*mH*(V-vH); //5
-      double INaP = gNaP*mNaP_inf*hNaP*(V-vNa); //6
-      double ICaT = gCaT*mCaT*mCaT*hCaT*(V-vCa); //7
-      double IHVA = gHVA*mHVA_inf*(V-vCa); //8
-      double IBK = gBK*wBK*(V-vK); //9
-      double Imystery = gMystery*mMystery*nMystery*(V - vK); //10
-
       // output to file. 17 significant digits for full double precision
       fprintf (fp," %.17e %.17e %.17e %.17e %.17e %.17e %.17e %.17e %.17e %.17e %.17e\n",
                   t, V, nK, hNaP, mH, mCaT, hCaT, wBK, Ca, nMystery, tau);
-
-      fprintf (cp," %.17e %.17e %.17e %.17e %.17e %.17e %.17e %.17e %.17e %.17e\n",
-                  t, INa, IK, IL, IH, INaP, ICaT, IHVA, IBK, Imystery);
 
 
     }

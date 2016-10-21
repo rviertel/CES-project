@@ -18,10 +18,10 @@ int abscissa(int n, double *x, double *w);
 ██ ██   ████ ██       ██████     ██
 */
 
-#define NUM_PARS 5
+#define NUM_PARS 4
 #define NUM_METRICS 7
-#define BLOCKS 3
-#define ORDER 5
+#define BLOCKS 5
+#define ORDER 3
 
 
 #define EXTENSION_LEN 35
@@ -147,21 +147,13 @@ pars[2].order = ORDER;
 pars[2].block_len = (pars[2].high - pars[2].low)/pars[2].blocks; // don't change
 pars[2].M = ((pars[2].order+1)>>1); // don't change
 
-strcpy(pars[3].name, "gHVA");
-pars[3].low = 1.4;
-pars[3].high = 2.6;
+strcpy(pars[3].name, "gBK");
+pars[3].low = 3.5;
+pars[3].high = 6.5;
 pars[3].blocks = BLOCKS;
 pars[3].order = ORDER;
 pars[3].block_len = (pars[3].high - pars[3].low)/pars[3].blocks; // don't change
 pars[3].M = ((pars[3].order+1)>>1); // don't change
-
-strcpy(pars[4].name, "gBK");
-pars[4].low = 3.5;
-pars[4].high = 6.5;
-pars[4].blocks = BLOCKS;
-pars[4].order = ORDER;
-pars[4].block_len = (pars[4].high - pars[4].low)/pars[4].blocks; // don't change
-pars[4].M = ((pars[4].order+1)>>1); // don't change
 
 if(verbose && rank == 0)
 {
@@ -378,18 +370,15 @@ for (k = start; k < end; k++)
       double value[NUM_METRICS];
       char str[EXTENSION_LEN];
       char tracestr[FILENAME_LEN];
-      char metricstr[FILENAME_LEN], currentstr[FILENAME_LEN];
+      char metricstr[FILENAME_LEN];
 
-      FILE *trace, *metric, *current;
+      FILE *trace, *metric;
 
       // name data files
       sprintf(str, "_eid_%d_gid_%d.dat", k,i);
 
       sprintf(tracestr,"data/trace");
       strcat(tracestr, str);
-
-      sprintf(currentstr,"data/current");
-      strcat(currentstr, str);
 
       sprintf(metricstr,"data/metric");
       strcat(metricstr, str);
@@ -404,10 +393,8 @@ for (k = start; k < end; k++)
         else
         {
           trace = fopen(tracestr, "w");
-          current = fopen(currentstr, "w");
-          uq_ET(quad_grid[i],NUM_PARS,trace,current);
+          uq_ET(quad_grid[i],NUM_PARS,trace);
           fclose(trace);
-          fclose(current);
         }
       }
 
@@ -418,6 +405,8 @@ for (k = start; k < end; k++)
         metric = fopen(metricstr, "w");
         uq_processTrace(trace, metric);
         fclose(trace);
+        remove(tracestr);
+
         fclose(metric);
       }
 
@@ -446,6 +435,7 @@ for (k = start; k < end; k++)
         }
 
         fclose(metric);
+        remove(metricstr);
       }
 
     }
