@@ -306,29 +306,15 @@ if(rank == 0)
 for (k = start; k < end; k++)
 {
 
+  char mstr[40];
+  sprintf(mstr,"data2/moments_eid_%d.dat",k);
+  FILE* vp;
 
-  //handle partial data left over from previous batch job that got cancelled
-  if(k < end-1)
+  //handle previously canceled jobs
+  if((vp = fopen(mstr,"r")))
   {
-    char readstr[40];
-    sprintf(readstr,"data2/moments_eid_%d.dat",k+1);
-    FILE* rp;
-
-    if((rp = fopen(readstr,"r")))
-    {
-      fclose(rp);
-      continue;
-    }
-    else
-    {
-      if(k > start)
-      {
-        char removestr[40];
-        sprintf(removestr,"data2/moments_eid_%d.dat",k);
-        fclose(rp);
-        remove(removestr);
-      }
-    }
+    fclose(vp);
+    continue;
   }
 
 
@@ -495,9 +481,7 @@ for (k = start; k < end; k++)
   }
 
   // print output to file
-  char mstr[40];
-  sprintf(mstr,"data2/moments_eid_%d.dat",k);
-  FILE* vp = fopen(mstr,"w");
+  vp = fopen(mstr,"w");
 
   for(i=0;i<NUM_METRICS;i++)
     fprintf(vp,"%.17le %.17le\n", mean[i], variance[i]);
