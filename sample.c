@@ -306,6 +306,32 @@ if(rank == 0)
 for (k = start; k < end; k++)
 {
 
+
+  //handle partial data left over from previous batch job that got cancelled
+  if(k < end-1)
+  {
+    char readstr[40];
+    sprintf(readstr,"data2/moments_eid_%d.dat",k+1);
+    FILE* rp;
+
+    if((rp = fopen(readstr,"r")))
+    {
+      fclose(rp);
+      continue;
+    }
+    else
+    {
+      if(k > start)
+      {
+        char removestr[40];
+        sprintf(removestr,"data2/moments_eid_%d.dat",k);
+        fclose(rp);
+        remove(removestr);
+      }
+    }
+  }
+
+
   /***************************find volume of this element************************/
   double volume = 1;
   for(j=0;j<NUM_PARS;j++)
