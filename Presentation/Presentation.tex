@@ -538,19 +538,69 @@ Average Firing Rate & 0.2089 & 0.6502 & 0.1217 & 0.0191 \\
   \end{center}
 \end{frame}
 
-\section{Discussion}
-
-\begin{frame}\frametitle{Discussion}
- \begin{itemize}
-  \item The ME-PCM can be used to aid in experimental design and validate/invalidate models by producing falsifiable predictions. For example, the time-varying version can be used to predict the time at which a system should be perturbed in order to modify the outcome.
-  \item The ME-PCM is very general, allowing users to define metrics relevant to the specific system being analyzed. The only restriction on these user-defined metrics is that they be integrable functions over the parameter space. Further output metrics can be computed at any time step allowing for an analysis of parameter values on the transient response.
- \end{itemize}
+\begin{frame}\frametitle{Variance}
+  Projecting variance traces onto the space spanned by $1,F_1,...,F_4$ did not work nicely.
+  \begin{center}
+    \includegraphics[scale=.32]{BurstDurationVariance.pdf}%
+    \includegraphics[scale=.32]{BurstDurationVarianceProjection.pdf}%
+  \end{center}
 \end{frame}
 
-\begin{frame}\frametitle{Discussion}
+\begin{frame}\frametitle{Are there any elements that should be avoided?}
+  \begin{itemize}
+    \item We are not so much concerned with how the parameters shape the variance, but rather simply if there are any sections of parameter space that are too ``sensitive'' and should be avoided
+    \item Variance for every metric but burst duration was small, and all mean values fell well within the range of experimentally observed values.
+    \item Why is burst duration so sensitive?
+  \end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Burst Duration Sensitivity}
+  Element 422 had a high value for variance
+  \begin{center}
+    \includegraphics[scale=.45]{Element422.pdf}%
+  \end{center}
+\end{frame}
+
+\begin{frame}\frametitle{Single Bursts}
+  Projection method revealed that most of the variability was due to CaT. Holding other parameter values constant and varying CaT from 13.5 to 14 results in a small perturbation of the burst envelope.
+  \begin{center}
+    \includegraphics[scale=.32]{SingleBurst13p5.pdf}%
+    \includegraphics[scale=.32]{SingleBurst14.pdf}%
+  \end{center}
+\end{frame}
+
+\begin{frame}\frametitle{Overlay}
+  \begin{center}
+    \includegraphics[scale=.5]{SingleBurstOverlay.pdf}%
+  \end{center}
+\end{frame}
+
+\section{Discussion}
+
+\begin{frame}\frametitle{Project Discussion}
+  Goals of the project proposal were met.\\
+  \vspace{1em}
+  Project outcomes:
+  \begin{itemize}
+    \item ME-PCM was implemented efficiently in parallel
+    \item Computation on CHPC clusters allowed for more data than possible on workstation
+    \item ET-Cell model determined to be insensitive to relative strengths of current Conductances
+    \item New conclusions were drawn about the effect of each parameter on output metrics
+  \end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{ME-PCM Discussion}
  \begin{itemize}
-  \item In the limit as the sample element size goes to zero, the variance of a quantity computed with the ME-PCM converges to the magnitude of the square of the gradient of that quantity (normalized by a factor)
-  \item The ME-PCM is more computationally efficient by orders of magnitude compared to Monte Carlo methods. Further it is more robust to physical singularities and boundary errors than gradient-based methods and more computationally efficient in its post-processing step.
+   \item The ME-PCM is very general and easy to implement
+   \begin{itemize}
+     \item User-defined metrics
+     \item Metrics need not be continuous functions
+     \item Metrics can vary over time (not seen in this presentation)
+   \end{itemize}
+   \item ME-PCM can be used to quantify system sensitivity and elucidate the effects of parameters on system output
+   \item In the limit as the element size goes to zero, the variance within an element converges to the magnitude of the square of the gradient
+   \item Claim that multiple metrics can be examined after sampling step was not feasible in practice.
+   \item Despite the claimed efficiency improvement over Monte-Carlo methods, any method that requires sampling will not scale well with dimensionality
  \end{itemize}
 \end{frame}
 
