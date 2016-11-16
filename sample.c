@@ -6,7 +6,7 @@
 #include <dirent.h>
 #include <sys/stat.h>
 #include <errno.h>
-#include "uq_ETCell.h"
+#include "uq_ETCell2.h"
 
 int abscissa(int n, double *x, double *w);
 
@@ -18,10 +18,10 @@ int abscissa(int n, double *x, double *w);
 ██ ██   ████ ██       ██████     ██
 */
 
-#define NUM_PARS 4
-#define NUM_METRICS 7
-#define BLOCKS 5
-#define ORDER 5
+#define NUM_PARS 3
+#define NUM_METRICS 14
+#define BLOCKS 10
+#define ORDER 8
 
 
 #define EXTENSION_LEN 35
@@ -123,37 +123,29 @@ int main(int argc, char** argv) {
 Parameter pars[NUM_PARS];
 
 // define parameters;
-strcpy(pars[0].name, "gH");
-pars[0].low = 14;
-pars[0].high = 26;
+strcpy(pars[0].name, "Amplitude");
+pars[0].low = 0;
+pars[0].high = 200;
 pars[0].blocks = BLOCKS;
 pars[0].order = ORDER;
 pars[0].block_len = (pars[0].high - pars[0].low)/pars[0].blocks; // don't change
 pars[0].M = ((pars[0].order+1)>>1); // don't change
 
-strcpy(pars[1].name, "gCaT");
-pars[1].low = 10.5;
-pars[1].high = 19.5;
+strcpy(pars[1].name, "Frequency");
+pars[1].low = 1;
+pars[1].high = 10;
 pars[1].blocks = BLOCKS;
 pars[1].order = ORDER;
 pars[1].block_len = (pars[1].high - pars[1].low)/pars[1].blocks; // don't change
 pars[1].M = ((pars[1].order+1)>>1); // don't change
 
-strcpy(pars[2].name, "gNaP");
-pars[2].low = 5.83;
-pars[2].high = 10.82;
+strcpy(pars[2].name, "Duty Cycle");
+pars[2].low = 10;
+pars[2].high = 90;
 pars[2].blocks = BLOCKS;
 pars[2].order = ORDER;
 pars[2].block_len = (pars[2].high - pars[2].low)/pars[2].blocks; // don't change
 pars[2].M = ((pars[2].order+1)>>1); // don't change
-
-strcpy(pars[3].name, "gBK");
-pars[3].low = 3.5;
-pars[3].high = 6.5;
-pars[3].blocks = BLOCKS;
-pars[3].order = ORDER;
-pars[3].block_len = (pars[3].high - pars[3].low)/pars[3].blocks; // don't change
-pars[3].M = ((pars[3].order+1)>>1); // don't change
 
 if(verbose && rank == 0)
 {
@@ -405,7 +397,12 @@ for (k = start; k < end; k++)
         else
         {
           trace = fopen(tracestr, "w");
-          uq_ET(quad_grid[i],NUM_PARS,trace);
+          InputData data;
+          data.type = 1;
+          data.amplitude = quad_grid[i][0];
+          data.frequency = quad_grid[i][1];
+          data.duty_cycle = quad_grid[i][2];
+          uq_ET(&data,trace);
           fclose(trace);
         }
       }
