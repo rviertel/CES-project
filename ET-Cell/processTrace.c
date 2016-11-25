@@ -159,12 +159,14 @@ void processTrace(FILE* fp, FILE* op, InputData* input_data)
 
   burstDuration = burstDuration/num_bursts;
 
+  double totalPeriod = 0;
+
   for(i = 0; i < num_bursts - 1; i ++)
   {
-    burstFrequency += 1/(burstStartTimes[i+1] - burstStartTimes[i]);
+    totalPeriod += (burstStartTimes[i+1] - burstStartTimes[i])
   }
 
-  burstFrequency = (burstFrequency/(num_bursts - 1))*1000;
+  burstFrequency = ((num_bursts - 1)/totalPeriod)*1000;
 
   spikesPerBurst = (double)valid_spikes/(double)num_bursts;
 
