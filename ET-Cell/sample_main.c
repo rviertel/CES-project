@@ -2,7 +2,7 @@
 #include <omp.h>
 #include "ETCell.h"
 
-#define DUTY_CYCLE 70
+#define DUTY_CYCLE 30
 #define MAX_i 25
 #define MAX_j 10
 #define MAX_k 5
@@ -14,29 +14,33 @@ int main(int argc,char* argv[]) {
   int i,j,k;
   double ex_in[] = {-15,14,67,137,205};
 
-
   FILE *file;
-  if ((file = fopen("data/metrics.dat", "r")))
-  {
-      fclose(file);
-      remove("data/metrics.dat");
-  }
 
   for(k = 1;k <= MAX_k; k++)
   {
+    char metrics[100];
+    sprintf(metrics,"data2/%dhz%d/metrics.dat",k,DUTY_CYCLE);
+
+    if ((file = fopen(metrics, "r")))
+    {
+      fclose(file);
+      remove(metrics);
+    }
+
+
+
     for(j = 1; j <= MAX_j; j++)
     {
+
       for(i = 0; i <= MAX_i ; i++)
       {
         char trace[100];
         char current[100];
-        char metrics[100];
 
         int simulate = 0;
 
-        sprintf(trace,"data/%dhz%d/ET_%d_%d.dat",k,DUTY_CYCLE,j,i*10);
-        sprintf(current,"data/%dhz%d/current_%d_%d.dat",k,DUTY_CYCLE,j,i*10);
-        sprintf(metrics,"data/%dhz%d/metrics.dat",k,DUTY_CYCLE);
+        sprintf(trace,"data2/%dhz%d/ET_%d_%d.dat",k,DUTY_CYCLE,j,i*10);
+        sprintf(current,"data2/%dhz%d/current_%d_%d.dat",k,DUTY_CYCLE,j,i*10);
 
         if (!(file = fopen(trace, "r")))
         {
@@ -60,7 +64,6 @@ int main(int argc,char* argv[]) {
           fclose(fp);
           fclose(cp);
         }
-
 
         FILE* fp = fopen(trace, "r");
         FILE* op = fopen(metrics,"a+");
