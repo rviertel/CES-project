@@ -6,7 +6,7 @@
 #include "ETCell.h"
 #include "parameters.h"
 
-#define TIME 5000
+#define TIME 10000
 #define NUM_EQ 9
 
 int vfield (double t, const double y[], double dy[], void *params);

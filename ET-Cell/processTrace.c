@@ -51,7 +51,7 @@ void processTrace(FILE* fp, FILE* op, InputData* input_data)
   if((*input_data).type == 0)
     BURST_POINT = 0.25 + ((*input_data).input*0.0003);
   else
-    BURST_POINT = 0.25;
+    BURST_POINT = 0.25 + ((*input_data).amplitude*0.0003);
 
   scan_status = fscanf (fp," %le %le %le %le %le %le %le %le %le %le %le\n", &t, &V, &nK, &hNaP, &mH, &mCaT, &hCaT, &wBK, &Ca, &nMystery, &tau);
 
@@ -99,6 +99,7 @@ void processTrace(FILE* fp, FILE* op, InputData* input_data)
         valid_spikes += spike_count;
         if((*input_data).type == 1)
         {
+          printf("%f\n", phase);
           mean_phase += phase;
           vector[0] += cos(phase);
           vector[1] += sin(phase);
@@ -159,26 +160,28 @@ void processTrace(FILE* fp, FILE* op, InputData* input_data)
 
   burstDuration = burstDuration/num_bursts;
 
+  double totalPeriod = 0;
+
   for(i = 0; i < num_bursts - 1; i ++)
   {
-    burstFrequency += 1/(burstStartTimes[i+1] - burstStartTimes[i]);
+    totalPeriod += (burstStartTimes[i+1] - burstStartTimes[i]);
   }
 
-  burstFrequency = (burstFrequency/(num_bursts - 1))*1000;
+  burstFrequency = ((num_bursts - 1)/totalPeriod)*1000;
 
   spikesPerBurst = (double)valid_spikes/(double)num_bursts;
 
   amp = amp/data_point_count;
 
-  int synched = 0;
+  int synced = 0;
 
   if(vector_strength > .9 && abs(burstFrequency - (*input_data).frequency) < .05)
-    synched = 1;
+    synced = 1;
 
   if((*input_data).type == 0)
     fprintf(op,"%.17e %.17e %.17e %.17e %.17e %.17e %.17e %.17e\n", (*input_data).input, burstDuration,burstFrequency,spikesPerBurst, mmp, amp, average_peak_firing_rate, average_firing_rate);
   else if((*input_data).type == 1)
-    fprintf(op,"%.17e %.17e %.17e %.17e %.17e %.17e %.17e %.17e %.17e %.17e %.17e %.17e %d\n", (*input_data).frequency, (*input_data).amplitude, (*input_data).duty_cycle, burstDuration, burstFrequency, spikesPerBurst, mmp, amp, average_peak_firing_rate, average_firing_rate, vector_strength, mean_phase, synched);
+    fprintf(op,"%.17e %.17e %.17e %.17e %.17e %.17e %.17e %.17e %.17e %.17e %.17e %.17e %d %d\n", (*input_data).frequency, (*input_data).amplitude, (*input_data).duty_cycle, burstDuration, burstFrequency, spikesPerBurst, mmp, amp, average_peak_firing_rate, average_firing_rate, vector_strength, mean_phase, synced, num_bursts);
 
 
 } // processTrace()

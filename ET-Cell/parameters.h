@@ -20,7 +20,7 @@
 // #define gNa 29.17
 // #define gK 12.96
 // #define gH 20.0
-// #define gCaT 11.0213 or 15.0213
+// #define gCaT 15.0213
 // #define gNaP 8.3244
 // #define gHVA 2.0
 // #define gBK 5.0
@@ -32,8 +32,8 @@
 #define gH 20.0
 #define gCaT 15.0213
 #define gNaP 8.3244
-#define gHVA 2.0
-#define gBK 5.0
+#define gHVA 2
+#define gBK 5
 #define gMystery 10.0
 
 // Na
