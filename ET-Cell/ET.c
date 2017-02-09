@@ -54,7 +54,7 @@ int vfield (double t, const double y[], double dy[], void *params) {
   double hCaT = y[5];
   double wBK = y[6];
   double Ca = y[7];
-  double nMystery = y[8];
+  double nNew = y[8];
 
   InputData* input_data = (InputData*)params;
   double Input, Iex = 0;
@@ -93,10 +93,10 @@ int vfield (double t, const double y[], double dy[], void *params) {
   double mHVA_inf = 1.0/(1.0+exp(-(V + 10.0)/6.5));
   double wBK_inf = 1.0/(1.0+exp((theta_wBK - V)/15.6));
 
-  // mystery equations
-  double mMystery = 1.0/(1.0+exp((V+40)/-2));
-  double nMystery_inf = 1.0/(1.0+exp((V+30)/-2));
-  double nMystery_tau = 1000/(1.0+exp(-(V+35))) + 1000;
+  // New equations
+  double mNew = 1.0/(1.0+exp(-(V+40)/2));
+  double nNew_inf = 1.0/(1.0+exp(-(V+30)/2));
+  double nNew_tau = 1000/(1.0+exp(-(V+35))) + 1000;
 
   //time constants
   double nK_tau = tau_nK/cosh((V-theta_nK)/(2.0*sigma_nK));
@@ -110,7 +110,7 @@ int vfield (double t, const double y[], double dy[], void *params) {
 
   // compute values for the currents
   double INa = gNa*(1.0-nK)*mNa_inf*mNa_inf*mNa_inf*(V-vNa);
-  double Imystery = gMystery*mMystery*nMystery*(V - vK);
+  double INew = gNew*mNew*nNew*(V - vK);
   double IK = gK*nK*nK*nK*nK*(V-vK);
   double IL = gL*(V-vL);
   double IH = gH*mH*(V-vH);
@@ -120,7 +120,7 @@ int vfield (double t, const double y[], double dy[], void *params) {
   double IBK = gBK*wBK*(V-vK);
 
 
-  dy[0] = -(INa + IK + ICaT + IH + INaP + IL + IHVA + IBK + Imystery - Input - Iex)/C;
+  dy[0] = -(INa + IK + ICaT + IH + INaP + IL + IHVA + IBK + INew - Input - Iex)/C;
   dy[1] = (nK_inf-nK)/nK_tau;
   dy[2] = (hNaP_inf-hNaP)/hNaP_tau;
   dy[3] = (mH_inf-mH)/mH_tau;
@@ -128,7 +128,7 @@ int vfield (double t, const double y[], double dy[], void *params) {
   dy[5] = (hCaT_inf-hCaT)/hCaT_tau;
   dy[6] = (wBK_inf - wBK)/wBK_tau;
   dy[7] = -Ca_buffer*10.0*(ICaT + IHVA)/(Ca_z*F*d) + (Ca0 - Ca)/tau_Ca;
-  dy[8] = (nMystery_inf - nMystery)/nMystery_tau;
+  dy[8] = (nNew_inf - nNew)/nNew_tau;
 
   return GSL_SUCCESS;
 }
@@ -179,10 +179,10 @@ void ET(InputData* input_data, FILE* fp, FILE* cp, double Iex) {
       double hCaT = y[5];
       double wBK = y[6];
       double Ca = y[7];
-      double nMystery = y[8];
+      double nNew = y[8];
       double tau = 1000/(1.0+exp(-(V+35))) + 200;
 
-      double mMystery = 1.0/(1.0+exp((V-theta_nK)/sigma_nK));
+      double mNew = 1.0/(1.0+exp((V-theta_nK)/sigma_nK));
       double mNa_inf = 1.0/(1.0+exp((V-theta_mNa)/sigma_mNa));
       double mHVA_inf = 1.0/(1.0+exp(-(V + 10.0)/6.5));
       double mNaP_inf = 1.0/(1.0+exp((V-theta_mNaP)/sigma_mNaP));
@@ -196,14 +196,14 @@ void ET(InputData* input_data, FILE* fp, FILE* cp, double Iex) {
       double ICaT = gCaT*mCaT*mCaT*hCaT*(V-vCa); //7
       double IHVA = gHVA*mHVA_inf*(V-vCa); //8
       double IBK = gBK*wBK*(V-vK); //9
-      double Imystery = gMystery*mMystery*nMystery*(V - vK); //10
+      double INew = gNew*mNew*nNew*(V - vK); //10
 
       // output to file. 17 significant digits for full double precision
       fprintf (fp," %.17e %.17e %.17e %.17e %.17e %.17e %.17e %.17e %.17e %.17e %.17e\n",
-                  t, V, nK, hNaP, mH, mCaT, hCaT, wBK, Ca, nMystery, tau);
+                  t, V, nK, hNaP, mH, mCaT, hCaT, wBK, Ca, nNew, tau);
 
       fprintf (cp," %.17e %.17e %.17e %.17e %.17e %.17e %.17e %.17e %.17e %.17e\n",
-                  t, INa, IK, IL, IH, INaP, ICaT, IHVA, IBK, Imystery);
+                  t, INa, IK, IL, IH, INaP, ICaT, IHVA, IBK, INew);
 
 
     }

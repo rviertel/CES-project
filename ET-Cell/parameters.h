@@ -24,7 +24,7 @@
 // #define gNaP 8.3244
 // #define gHVA 2.0
 // #define gBK 5.0
-// #define gMystery 10.0
+// #define gNew 10.0
 
 #define gL 2.5
 #define gNa 29.17
@@ -34,7 +34,7 @@
 #define gNaP 8.3244
 #define gHVA 2.0
 #define gBK 5.0
-#define gMystery 10.0
+#define gNew 10.0
 
 // Na
 #define theta_mNa -25.0
