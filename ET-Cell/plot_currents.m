@@ -1,0 +1,7 @@
+plot(current_0(:,1),current_0(:,9),current_0(:,1),current_0(:,10),current_0(:,1),current_0(:,9)+current_0(:,10))
+figure(2)
+plot(current_40(:,1),current_40(:,9),current_40(:,1),current_40(:,10),current_40(:,1),current_40(:,9)+current_40(:,10))
+figure(3)
+plot(current_80(:,1),current_80(:,9),current_80(:,1),current_80(:,10),current_80(:,1),current_80(:,9)+current_80(:,10))
+figure(4)
+plot(current_120(:,1),current_120(:,9),current_120(:,1),current_120(:,10),current_120(:,1),current_120(:,9)+current_120(:,10))

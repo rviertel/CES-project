@@ -4,7 +4,7 @@
 \usepackage{amsmath,amssymb,amsthm}
 \usepackage{mathtools}
 \usepackage{epsfig}
-\usepackage{color}
+\usepackage{color,soul}
 \usepackage{geometry}
 \usepackage{hyperref}
 \usepackage{lmodern}
@@ -28,7 +28,7 @@
 \title{Multi-element probabilistic collocation method for sensitivity analysis}
 \author{Ryan Viertel}
 \institute{University of Utah}
-\date{Feb 9, 2015}
+\date{Nov. 21, 2016}
 
 \begin{document}
 
@@ -66,7 +66,7 @@
 
 \begin{frame}\frametitle{ME-PCM Introduction}
 \begin{itemize}
-  \item The ME-PCM is described in the paper \emph{Multi-element probabilistic collocation method for sensitivity analysis} \cite{foo_multi-element_2009}
+  \item The ME-PCM is described in the paper \emph{Multi-element probabilistic collocation method for sensitivity analysis in cellular signaling networks} \cite{foo_multi-element_2009}
   \item An alternative to monte-carlo simulations and gradient-based methods for analyzing ODE or PDE system sensitivity.
   \item Has the advantages that:
     \begin{itemize}
@@ -77,27 +77,6 @@
     \end{itemize}
   \item Can help elucidate and quantify the effects of system parameters
 \end{itemize}
-\end{frame}
-
-\section{Method}
-
-\begin{frame}\frametitle{ME-PCM Method}
- We will consider a generic system of ODEs
- \begin{equation*}
-  \mathbf{x}'(t) = f(\mathbf{x}(t),\mathbf{Y},t)
- \end{equation*}
- Where $\mathbf{x}$ is a vector of system variables, and $\mathbf{Y}$ is a vector of parameters or initial conditions that we will vary. We will consider $\mathbf{Y}$ to be stochastic with a uniform distribution on its domain. There are 3 steps to the ME-PCM:
- \begin{enumerate}
-  \item Select biologically relevant output metrics of the system
-  \item Select a parameter space, and a quadrature rule for integration over the parameter space
-  \item Sample solutions over parameter space and compute the metrics of system output
- \end{enumerate}
-\end{frame}
-
-\begin{frame}\frametitle{ME-PCM Method}
-  \begin{center}
-    \includegraphics[scale = .25]{grid.png}
-  \end{center}
 \end{frame}
 
 \section{ET-Cell Model}
@@ -129,6 +108,12 @@
  fig. 1 G
 \end{frame}
 
+\begin{frame}\frametitle{Summary of Experimental Results from Liu \& Shipley \cite{liu_multiple_2008}}
+  \begin{center}
+    \includegraphics[scale = .33]{summary.png}
+  \end{center}
+\end{frame}
+
  \begin{frame}\frametitle{Model}
  We track the membrane potential, the calcium concentration, and the state of the gating variables for each current.
  \begin{align*}
@@ -138,21 +123,15 @@
  \end{align*}
  \end{frame}
 
- \begin{frame}\frametitle{Gating variables}
- Each gating variable has the form
- $$\frac{dw}{dt} = (w_{\infty}(V) - w)/\tau_{w}(V)$$
- Where $w_{\infty}$ and $\tau_{w}$ depend on $V$.\\
- \vspace{1em}
- In the case of the $BK$ current, also depends on $[Ca^{2+}]$
- $$w_{\infty} = \frac{1}{1 + \exp{(V_{1/2} - V)/15.6}}$$
- $$V_{1/2} = -20 + 59.2e^{-90[Ca]} + 96.7e^{-470[Ca]}$$
- \end{frame}
-
- \begin{frame}\frametitle{Summary of Experimental Results from Liu \& Shipley \cite{liu_multiple_2008}}
-   \begin{center}
-     \includegraphics[scale = .33]{summary.png}
-   \end{center}
- \end{frame}
+ % \begin{frame}\frametitle{Gating variables}
+ % Each gating variable has the form
+ % $$\frac{dw}{dt} = (w_{\infty}(V) - w)/\tau_{w}(V)$$
+ % Where $w_{\infty}$ and $\tau_{w}$ depend on $V$.\\
+ % \vspace{1em}
+ % In the case of the $BK$ current, also depends on $[Ca^{2+}]$
+ % $$w_{\infty} = \frac{1}{1 + \exp{(V_{1/2} - V)/15.6}}$$
+ % $$V_{1/2} = -20 + 59.2e^{-90[Ca]} + 96.7e^{-470[Ca]}$$
+ % \end{frame}
 
  \begin{frame}\frametitle{Computational Model}
    \begin{center}
@@ -160,7 +139,26 @@
    \end{center}
  \end{frame}
 
- \section{Application of ME-PCM to ET-Cell model}
+ \section{Method}
+
+ \begin{frame}\frametitle{ME-PCM Method}
+   We will consider a generic system of ODEs
+   \begin{equation*}
+     \mathbf{x}'(t) = f(\mathbf{x}(t),\mathbf{Y},t)
+   \end{equation*}
+   Where $\mathbf{x}$ is a vector of system variables, and $\mathbf{Y}$ is a vector of parameters or initial conditions that we will vary. We will consider $\mathbf{Y}$ to be stochastic with a uniform distribution on its domain. There are 3 steps to the ME-PCM:
+   \begin{enumerate}
+     \item Select biologically relevant output metrics of the system
+     \item Select a parameter space, split the parameter space up into elements, and define a quadrature rule for integration over each element
+     \item Sample solutions over parameter space and compute the metrics of system output
+   \end{enumerate}
+ \end{frame}
+
+ \begin{frame}\frametitle{ME-PCM Method}
+   \begin{center}
+     \includegraphics[scale = .25]{grid.png}
+   \end{center}
+ \end{frame}
 
  \begin{frame}\frametitle{1. Select statistical metrics for system output}
    Biologically relevant metrics are defined in terms of statistical moments. In our case we chose to measure the mean and variance of the following quantities
@@ -184,7 +182,7 @@
    \item Large conductance potassium current - IBK
  \end{itemize}
 
- Currents were varied by $\pm$ test $30\%$ of their default value
+ Currents were varied by $\pm$ $30\%$ of their default value
 \end{frame}
 
 \begin{frame}\frametitle{2b. Select a quadrature rule}
@@ -192,9 +190,8 @@
   \begin{itemize}
     \item General, commonly used integration rule
     \item Good at integrating functions that can be well approximated by polynomials
-    \item Uses discrete integration points to project the function onto the space of Legendre polynomials
     \item Gives exact answer for polynomials of degree 2n-1 ($n = \#$ of grid points in each direction)
-    \item Grid points are locations of the roots of $P_n(x)$
+    \item Grid points are locations of the roots of Legendre polynomials $P_n(x)$
     \item Weights are given by:
   \end{itemize}
 
@@ -204,23 +201,23 @@
 
 \end{frame}
 
-\begin{frame}\frametitle{2b. Select a quadrature rule}
+\begin{frame}\frametitle{3. Sample Solutions and Compute Metrics}
   \begin{center}
     \includegraphics[scale = .5]{gaussian-quadrature.pdf}
   \end{center}
 \end{frame}
 
-\begin{frame}\frametitle{3. Sample solutions and compute metrics}
- \begin{itemize}
-  \item Compute the solution at each sample point (quadrature point) in the parameter space.
-  \item Compute the value of each metric within a given element by integrating over the parameter space on the grid in that element
-  \item For example, the burst duration sensitivity, $D_k$, in element $E_k$ is given by
-
-  \begin{equation*}
-   \left[\frac{1}{Vol(E_k)}\sum_{i=1}^{625}{D_k^2(x_k^i)w_k^i}\right] - \left[\frac{1}{Vol(E_k)}\sum_{i=1}^{625}{D_k(x_k^i)w_k^i}\right]^2
-  \end{equation*}
- \end{itemize}
-\end{frame}
+% \begin{frame}\frametitle{3. Sample solutions and compute metrics}
+%  \begin{itemize}
+%   \item Compute the solution at each sample point (quadrature point) in the parameter space.
+%   \item Compute the value of each metric within a given element by integrating over the parameter space on the grid in that element
+%   \item For example, the burst duration sensitivity, $D_k$, in element $E_k$ is given by
+%
+%   \begin{equation*}
+%    \left[\frac{1}{Vol(E_k)}\sum_{i=1}^{625}{D_k^2(x_k^i)w_k^i}\right] - \left[\frac{1}{Vol(E_k)}\sum_{i=1}^{625}{D_k(x_k^i)w_k^i}\right]^2
+%   \end{equation*}
+%  \end{itemize}
+% \end{frame}
 
 \section{Implementation}
 
@@ -248,7 +245,7 @@
   \begin{enumerate}
     \item It allows for use of multiple nodes, and complete use of all resources
     \item It avoids any message passing
-    \item It naturally fits the hierarchy or elements and grid points
+    \item It naturally fits the hierarchy of elements and grid points
     \item It was more simple to implement than an MPI only or OpenMP only approach
   \end{enumerate}
 \end{frame}
@@ -294,6 +291,26 @@
 \end{frame}
 
 \section{Results}
+
+\begin{frame}\frametitle{Areas to avoid}
+  Bursting fails in the following elements:
+  \vspace{1em}
+
+  % $$1 2 3 4 5 126 127 128 129 130 251 252 253 260 376$$
+
+
+         \begin{tabular}{c c c c c c}
+
+          & 1 & 2 & 3 & 4 & 5 \\
+
+          & 126 & 127 & 128 & 129 & 130 \\
+
+          & 251 & 252 & 253 & 260 & 376  \\
+         \end{tabular}
+
+  \vspace{1em}
+  These elements are all elements where CaT and NaP are both at their lowest values
+\end{frame}
 
 \begin{frame}\frametitle{Burst Duration}
   \begin{center}
@@ -520,6 +537,33 @@ Average Firing Rate & 0.2089 & 0.6502 & 0.1217 & 0.0191 \\
 \end{table}
 \end{frame}
 
+\begin{frame}\frametitle{Proportions}
+  \begin{table}
+\centering
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+ & H & CaT & NaP & BK \\
+\hline
+Burst Duration & 0.1182 & \hl{0.5543} & 0.0693 & \hl{0.2582} \\
+\hline
+Burst Frequency & 0.1761 & 0.0366 & \hl{0.7709} & 0.0164 \\
+\hline
+Spikes Per Burst & 0.1558 & \hl{0.5822} & 0.0869 & 0.1752 \\
+\hline
+MMP & \hl{0.4758} & 0.1935 & 0.0182 & \hl{0.3126} \\
+\hline
+AMP & \hl{0.3288} & \hl{0.2496} & 0.1446 & \hl{0.2770} \\
+\hline
+Peak Firing Rate & \hl{0.2192} & \hl{0.6571} & 0.0585 & 0.0652 \\
+\hline
+Average Firing Rate & \hl{0.2089} & \hl{0.6502} & 0.1217 & 0.0191 \\
+\hline
+\end{tabular}}
+\caption{Proportion of output metrics explained by each signal}
+\end{table}
+\end{frame}
+
 \begin{frame}\frametitle{Burst Duration}
   \begin{center}
     \includegraphics[scale=.5]{BurstDurationScatter.pdf}%
@@ -586,6 +630,7 @@ Average Firing Rate & 0.2089 & 0.6502 & 0.1217 & 0.0191 \\
     \item Computation on CHPC clusters allowed for more data than possible on workstation
     \item ET-Cell model determined to be insensitive to relative strengths of current Conductances
     \item New conclusions were drawn about the effect of each parameter on output metrics
+    \item Developed (novel?) method to analyze the high dimensional output data of the ME-PCM method
   \end{itemize}
 \end{frame}
 

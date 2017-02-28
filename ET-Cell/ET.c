@@ -49,9 +49,9 @@ int vfield (double t, const double y[], double dy[], void *params) {
   double V = y[0];
   double nK = y[1];
   double hNaP = y[2];
-  double mH = y[3];
-  double mCaT = y[4];
-  double hCaT = y[5];
+  double hH = y[3];
+  double mLVA = y[4];
+  double hLVA = y[5];
   double wBK = y[6];
   double Ca = y[7];
   double nNew = y[8];
@@ -86,48 +86,46 @@ int vfield (double t, const double y[], double dy[], void *params) {
   double mNa_inf = 1.0/(1.0+exp((V-theta_mNa)/sigma_mNa));
   double nK_inf = 1.0/(1.0+exp((V-theta_nK)/sigma_nK));
   double hNaP_inf = 1.0/(1.0+exp((V-theta_hNaP)/sigma_hNaP));
-  double mH_inf = 1.0/(1.0+exp((V-theta_mH)/sigma_mH));
-  double mCaT_inf = 1.0/(1.0+exp((V-theta_mCaT)/sigma_mCaT));
-  double hCaT_inf = 1.0/(1.0+exp((V-theta_hCaT)/sigma_hCaT));
+  double hH_inf = 1.0/(1.0+exp((V-theta_hH)/sigma_hH));
+  double mLVA_inf = 1.0/(1.0+exp((V-theta_mLVA)/sigma_mLVA));
+  double hLVA_inf = 1.0/(1.0+exp((V-theta_hLVA)/sigma_hLVA));
   double mNaP_inf = 1.0/(1.0+exp((V-theta_mNaP)/sigma_mNaP));
-  double mHVA_inf = 1.0/(1.0+exp(-(V + 10.0)/6.5));
-  double wBK_inf = 1.0/(1.0+exp((theta_wBK - V)/15.6));
-
-  // New equations
-  double mNew = 1.0/(1.0+exp(-(V+40)/2));
-  double nNew_inf = 1.0/(1.0+exp(-(V+30)/2));
-  double nNew_tau = 1000/(1.0+exp(-(V+35))) + 1000;
+  double mHVA_inf = 1.0/(1.0+exp((V-theta_mHVA)/sigma_mHVA));
+  double wBK_inf = 1.0/(1.0+exp((V-theta_wBK)/sigma_wBK));
+  double mNew_inf = 1.0/(1.0+exp((V-theta_mNew)/sigma_mNew));
+  double nNew_inf = 1.0/(1.0+exp((V-theta_nNew)/sigma_nNew));
 
   //time constants
+  double nNew_tau = 1000/(1.0+exp(-(V+35))) + 1000;
   double nK_tau = tau_nK/cosh((V-theta_nK)/(2.0*sigma_nK));
   double hNaP_tau = tau_hNaP/cosh((V-theta_hNaP)/(2.0*sigma_hNaP));
-  double mH_tau = tau_mH_T*exp(delta_mH_T*(V-theta_mH_T)/sigma_mH_T)
-                            / (1+exp((V-theta_mH_T)/sigma_mH_T));
-  double mCaT_tau = tau_mCaT/cosh((V-theta_mCaT)/(2.0*sigma_mCaT));
-  double hCaT_tau = tau_hCaT/cosh((V-theta_hCaT)/(2.0*sigma_hCaT));
+  double hH_tau = tau_hH_T*exp(delta_hH_T*(V-theta_hH_T)/sigma_hH_T)
+                            / (1+exp((V-theta_hH_T)/sigma_hH_T));
+  double mLVA_tau = tau_mLVA/cosh((V-theta_mLVA)/(2.0*sigma_mLVA));
+  double hLVA_tau = tau_hLVA/cosh((V-theta_hLVA)/(2.0*sigma_hLVA));
   double wBK_tau = -(p - 1.0)*(f - 0.2)/0.8 + wBK_base;
 
 
   // compute values for the currents
   double INa = gNa*(1.0-nK)*mNa_inf*mNa_inf*mNa_inf*(V-vNa);
-  double INew = gNew*mNew*nNew*(V - vK);
+  double INew = gNew*mNew_inf*nNew*(V - vK);
   double IK = gK*nK*nK*nK*nK*(V-vK);
   double IL = gL*(V-vL);
-  double IH = gH*mH*(V-vH);
+  double IH = gH*hH*(V-vH);
   double INaP = gNaP*mNaP_inf*hNaP*(V-vNa);
-  double ICaT = gCaT*mCaT*mCaT*hCaT*(V-vCa);
+  double ILVA = gLVA*mLVA*mLVA*hLVA*(V-vCa);
   double IHVA = gHVA*mHVA_inf*(V-vCa);
   double IBK = gBK*wBK*(V-vK);
 
 
-  dy[0] = -(INa + IK + ICaT + IH + INaP + IL + IHVA + IBK + INew - Input - Iex)/C;
+  dy[0] = -(INa + IK + ILVA + IH + INaP + IL + IHVA + IBK + INew - Input - Iex)/C;
   dy[1] = (nK_inf-nK)/nK_tau;
   dy[2] = (hNaP_inf-hNaP)/hNaP_tau;
-  dy[3] = (mH_inf-mH)/mH_tau;
-  dy[4] = (mCaT_inf-mCaT)/mCaT_tau;
-  dy[5] = (hCaT_inf-hCaT)/hCaT_tau;
+  dy[3] = (hH_inf-hH)/hH_tau;
+  dy[4] = (mLVA_inf-mLVA)/mLVA_tau;
+  dy[5] = (hLVA_inf-hLVA)/hLVA_tau;
   dy[6] = (wBK_inf - wBK)/wBK_tau;
-  dy[7] = -Ca_buffer*10.0*(ICaT + IHVA)/(Ca_z*F*d) + (Ca0 - Ca)/tau_Ca;
+  dy[7] = -Ca_buffer*10.0*(ILVA + IHVA)/(Ca_z*F*d) + (Ca0 - Ca)/tau_Ca;
   dy[8] = (nNew_inf - nNew)/nNew_tau;
 
   return GSL_SUCCESS;
@@ -174,9 +172,9 @@ void ET(InputData* input_data, FILE* fp, FILE* cp, double Iex) {
       double V = y[0];
       double nK = y[1];
       double hNaP = y[2];
-      double mH = y[3];
-      double mCaT = y[4];
-      double hCaT = y[5];
+      double hH = y[3];
+      double mLVA = y[4];
+      double hLVA = y[5];
       double wBK = y[6];
       double Ca = y[7];
       double nNew = y[8];
@@ -191,19 +189,19 @@ void ET(InputData* input_data, FILE* fp, FILE* cp, double Iex) {
       double INa = gNa*(1.0-nK)*mNa_inf*mNa_inf*mNa_inf*(V-vNa); //2
       double IK = gK*nK*nK*nK*nK*(V-vK); //3
       double IL = gL*(V-vL); //4
-      double IH = gH*mH*(V-vH); //5
+      double IH = gH*hH*(V-vH); //5
       double INaP = gNaP*mNaP_inf*hNaP*(V-vNa); //6
-      double ICaT = gCaT*mCaT*mCaT*hCaT*(V-vCa); //7
+      double ILVA = gLVA*mLVA*mLVA*hLVA*(V-vCa); //7
       double IHVA = gHVA*mHVA_inf*(V-vCa); //8
       double IBK = gBK*wBK*(V-vK); //9
       double INew = gNew*mNew*nNew*(V - vK); //10
 
       // output to file. 17 significant digits for full double precision
       fprintf (fp," %.17e %.17e %.17e %.17e %.17e %.17e %.17e %.17e %.17e %.17e %.17e\n",
-                  t, V, nK, hNaP, mH, mCaT, hCaT, wBK, Ca, nNew, tau);
+                  t, V, nK, hNaP, hH, mLVA, hLVA, wBK, Ca, nNew, tau);
 
       fprintf (cp," %.17e %.17e %.17e %.17e %.17e %.17e %.17e %.17e %.17e %.17e\n",
-                  t, INa, IK, IL, IH, INaP, ICaT, IHVA, IBK, INew);
+                  t, INa, IK, IL, IH, INaP, ILVA, IHVA, IBK, INew);
 
 
     }

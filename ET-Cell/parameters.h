@@ -20,7 +20,7 @@
 // #define gNa 29.17
 // #define gK 12.96
 // #define gH 20.0
-// #define gCaT 15.0213
+// #define gLVA 15.0213
 // #define gNaP 8.3244
 // #define gHVA 2.0
 // #define gBK 5.0
@@ -30,7 +30,7 @@
 #define gNa 29.17
 #define gK 12.96
 #define gH 20.0
-#define gCaT 15.0213
+#define gLVA 15.0213
 #define gNaP 8.3244
 #define gHVA 2.0
 #define gBK 5.0
@@ -45,13 +45,17 @@
 #define sigma_nK -9.0
 #define tau_nK 10.0
 
-// CaT
-#define theta_mCaT -37.1
-#define sigma_mCaT -4.8916
-#define tau_mCaT 40.0
-#define theta_hCaT -59.2
-#define sigma_hCaT 11.2326
-#define tau_hCaT 350.0
+// LVA
+#define theta_mLVA -37.1
+#define sigma_mLVA -4.8916
+#define tau_mLVA 40.0
+#define theta_hLVA -59.2
+#define sigma_hLVA 11.2326
+#define tau_hLVA 350.0
+
+// HVA
+#define theta_mHVA -10.0
+#define sigma_mHVA -6.5
 
 // NaP
 #define theta_mNaP -40.0
@@ -61,15 +65,22 @@
 #define tau_hNaP 500.0
 
 // H
-#define theta_mH -61.32
-#define sigma_mH 5.855
-#define tau_mH_T 100.0
-#define delta_mH_T 0.205
-#define theta_mH_T -65.95
-#define sigma_mH_T 4.44
+#define theta_hH -61.32
+#define sigma_hH 5.855
+#define tau_hH_T 100.0
+#define delta_hH_T 0.205
+#define theta_hH_T -65.95
+#define sigma_hH_T 4.44
+
+// New
+#define theta_mNew -40.0
+#define sigma_mNew -2.0
+#define theta_nNew -30.0
+#define sigma_nNew -2.0
 
 // BK
 #define wBK_base 170 //base time constant (ms)
+#define sigma_wBK -15.6
 
 // Ca
 #define Ca0 0.00002 // concentration of calcium (mM)
