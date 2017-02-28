@@ -30,7 +30,8 @@
 #define gNa 29.17
 #define gK 12.96
 #define gH 20.0
-#define gLVA 15.0213
+#define gLVA1 (15.0213/2.0)
+#define gLVA2 (15.0213/2.0)
 #define gNaP 8.3244
 #define gHVA 2.0
 #define gBK 5.0
@@ -45,13 +46,11 @@
 #define sigma_nK -9.0
 #define tau_nK 10.0
 
-// LVA
-#define theta_mLVA -37.1
-#define sigma_mLVA -4.8916
-#define tau_mLVA 40.0
-#define theta_hLVA -59.2
-#define sigma_hLVA 11.2326
-#define tau_hLVA 350.0
+// LVA1
+#define theta_mLVA1 -51.44
+#define sigma_mLVA1 -7.23
+#define theta_hLVA1 -73.43
+#define sigma_hLVA1 6.04
 
 // HVA
 #define theta_mHVA -10.0

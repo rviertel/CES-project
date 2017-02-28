@@ -7,7 +7,7 @@
 #include "parameters.h"
 
 #define TIME 5000
-#define NUM_EQ 9
+#define NUM_EQ 10
 
 int vfield (double t, const double y[], double dy[], void *params);
 double squarewave(double t, double freq, double amp, double duty_cycle);
@@ -50,11 +50,12 @@ int vfield (double t, const double y[], double dy[], void *params) {
   double nK = y[1];
   double hNaP = y[2];
   double hH = y[3];
-  double mLVA = y[4];
-  double hLVA = y[5];
-  double wBK = y[6];
-  double Ca = y[7];
-  double nNew = y[8];
+  double mLVA1 = y[4];
+  double hLVA1 = y[5];
+  double mLVA2 = y[6];
+  double wBK = y[7];
+  double Ca = y[8];
+  double nNew = y[9];
 
   InputData* input_data = (InputData*)params;
   double Input, Iex = 0;
@@ -87,8 +88,13 @@ int vfield (double t, const double y[], double dy[], void *params) {
   double nK_inf = 1.0/(1.0+exp((V-theta_nK)/sigma_nK));
   double hNaP_inf = 1.0/(1.0+exp((V-theta_hNaP)/sigma_hNaP));
   double hH_inf = 1.0/(1.0+exp((V-theta_hH)/sigma_hH));
-  double mLVA_inf = 1.0/(1.0+exp((V-theta_mLVA)/sigma_mLVA));
-  double hLVA_inf = 1.0/(1.0+exp((V-theta_hLVA)/sigma_hLVA));
+  double mLVA1_inf = 1.0/(1.0+exp((V-theta_mLVA1)/sigma_mLVA1));
+  double hLVA1_inf = 1.0/(1.0+exp((V-theta_hLVA1)/sigma_hLVA1));
+
+  double alpha = 1.11/(1.0+exp(-0.058*(V+10)));
+  double beta = (0.02*(V+23.9))/(1.0-exp((V+23.9)/5));
+  double mLVA2_inf = alpha/(alpha+beta);
+
   double mNaP_inf = 1.0/(1.0+exp((V-theta_mNaP)/sigma_mNaP));
   double mHVA_inf = 1.0/(1.0+exp((V-theta_mHVA)/sigma_mHVA));
   double wBK_inf = 1.0/(1.0+exp((V-theta_wBK)/sigma_wBK));
@@ -101,8 +107,19 @@ int vfield (double t, const double y[], double dy[], void *params) {
   double hNaP_tau = tau_hNaP/cosh((V-theta_hNaP)/(2.0*sigma_hNaP));
   double hH_tau = tau_hH_T*exp(delta_hH_T*(V-theta_hH_T)/sigma_hH_T)
                             / (1+exp((V-theta_hH_T)/sigma_hH_T));
-  double mLVA_tau = tau_mLVA/cosh((V-theta_mLVA)/(2.0*sigma_mLVA));
-  double hLVA_tau = tau_hLVA/cosh((V-theta_hLVA)/(2.0*sigma_hLVA));
+  double mLVA1_tau = 1.0/(exp((V+68.03)/-27.68)+exp((V+39.08)/2.74)) + 2.29;
+  double hLVA1_tau;
+
+  if(V < -50)
+  {
+    hLVA1_tau = exp((V+770)/162.5);
+  }
+  else
+  {
+    hLVA1_tau = 37 + exp((V+27)/-6);
+  }
+
+  double mLVA2_tau = 1.0/(alpha+beta);
   double wBK_tau = -(p - 1.0)*(f - 0.2)/0.8 + wBK_base;
 
 
@@ -113,20 +130,22 @@ int vfield (double t, const double y[], double dy[], void *params) {
   double IL = gL*(V-vL);
   double IH = gH*hH*(V-vH);
   double INaP = gNaP*mNaP_inf*hNaP*(V-vNa);
-  double ILVA = gLVA*mLVA*mLVA*hLVA*(V-vCa);
+  double ILVA1 = gLVA1*mLVA1*mLVA1*mLVA1*hLVA1*(V-vCa);
+  double ILVA2 = gLVA2*mLVA2*mLVA2*(V-vCa);
   double IHVA = gHVA*mHVA_inf*(V-vCa);
   double IBK = gBK*wBK*(V-vK);
 
 
-  dy[0] = -(INa + IK + ILVA + IH + INaP + IL + IHVA + IBK + INew - Input - Iex)/C;
+  dy[0] = -(INa + IK + ILVA1 + ILVA2 + IH + INaP + IL + IHVA + IBK - Input - Iex)/C;
   dy[1] = (nK_inf-nK)/nK_tau;
   dy[2] = (hNaP_inf-hNaP)/hNaP_tau;
   dy[3] = (hH_inf-hH)/hH_tau;
-  dy[4] = (mLVA_inf-mLVA)/mLVA_tau;
-  dy[5] = (hLVA_inf-hLVA)/hLVA_tau;
-  dy[6] = (wBK_inf - wBK)/wBK_tau;
-  dy[7] = -Ca_buffer*10.0*(ILVA + IHVA)/(Ca_z*F*d) + (Ca0 - Ca)/tau_Ca;
-  dy[8] = (nNew_inf - nNew)/nNew_tau;
+  dy[4] = (mLVA1_inf-mLVA1)/mLVA1_tau;
+  dy[5] = (hLVA1_inf-hLVA1)/hLVA1_tau;
+  dy[6] = (mLVA2_inf-mLVA2)/mLVA2_tau;
+  dy[7] = (wBK_inf - wBK)/wBK_tau;
+  dy[8] = -Ca_buffer*10.0*(ILVA1 + ILVA2 + IHVA)/(Ca_z*F*d) + (Ca0 - Ca)/tau_Ca;
+  dy[9] = (nNew_inf - nNew)/nNew_tau;
 
   return GSL_SUCCESS;
 }
@@ -155,7 +174,7 @@ void ET(InputData* input_data, FILE* fp, FILE* cp, double Iex) {
           1e-6, 1e-6, 0.0);
   int i;
   double t = 0.0, t1 = TIME; //time in ms
-   double y[NUM_EQ] = {-51.7045, 0.0531, 0.0604, 0.1720, 0.0460, 0.2084, 0.1292, 0.0005, 0};
+   double y[NUM_EQ] = {-51.7045, 0.0531, 0.0604, 0.1720, 0.0460, 0.2084, 0.0460, 0.1292, 0.0005, 0};
 
   for (i = 0; i <= (4*TIME); i++)
     {
@@ -173,11 +192,12 @@ void ET(InputData* input_data, FILE* fp, FILE* cp, double Iex) {
       double nK = y[1];
       double hNaP = y[2];
       double hH = y[3];
-      double mLVA = y[4];
-      double hLVA = y[5];
-      double wBK = y[6];
-      double Ca = y[7];
-      double nNew = y[8];
+      double mLVA1 = y[4];
+      double hLVA1 = y[5];
+      double mLVA2 = y[6];
+      double wBK = y[7];
+      double Ca = y[8];
+      double nNew = y[9];
       double tau = 1000/(1.0+exp(-(V+35))) + 200;
 
       double mNew = 1.0/(1.0+exp((V-theta_nK)/sigma_nK));
@@ -191,17 +211,18 @@ void ET(InputData* input_data, FILE* fp, FILE* cp, double Iex) {
       double IL = gL*(V-vL); //4
       double IH = gH*hH*(V-vH); //5
       double INaP = gNaP*mNaP_inf*hNaP*(V-vNa); //6
-      double ILVA = gLVA*mLVA*mLVA*hLVA*(V-vCa); //7
+      double ILVA1 = gLVA1*mLVA1*mLVA1*mLVA1*hLVA1*(V-vCa);
+      double ILVA2 = gLVA2*mLVA2*mLVA2*(V-vCa); //7
       double IHVA = gHVA*mHVA_inf*(V-vCa); //8
       double IBK = gBK*wBK*(V-vK); //9
       double INew = gNew*mNew*nNew*(V - vK); //10
 
       // output to file. 17 significant digits for full double precision
-      fprintf (fp," %.17e %.17e %.17e %.17e %.17e %.17e %.17e %.17e %.17e %.17e %.17e\n",
-                  t, V, nK, hNaP, hH, mLVA, hLVA, wBK, Ca, nNew, tau);
+      fprintf (fp," %.17e %.17e %.17e %.17e %.17e %.17e %.17e %.17e %.17e %.17e %.17e %.17e\n",
+                  t, V, nK, hNaP, hH, mLVA1, hLVA1, mLVA2, wBK, Ca, nNew, tau);
 
-      fprintf (cp," %.17e %.17e %.17e %.17e %.17e %.17e %.17e %.17e %.17e %.17e\n",
-                  t, INa, IK, IL, IH, INaP, ILVA, IHVA, IBK, INew);
+      fprintf (cp," %.17e %.17e %.17e %.17e %.17e %.17e %.17e %.17e %.17e %.17e %.17e\n",
+                  t, INa, IK, IL, IH, INaP, ILVA1, ILVA2, IHVA, IBK, INew);
 
 
     }

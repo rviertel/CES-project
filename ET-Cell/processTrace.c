@@ -14,7 +14,7 @@
 void processTrace(FILE* fp, FILE* op, InputData* input_data)
 {
   //input metrics
-  double t, V, nK, hNaP, mH, mCaT, hCaT, wBK, Ca, nMystery, tau;
+  double t, V, nK, hNaP, mH, mLVA1, hLVA1, mLVA2, wBK, Ca, nMystery, tau;
 
   //flags
   int scan_status;
@@ -53,7 +53,7 @@ void processTrace(FILE* fp, FILE* op, InputData* input_data)
   else
     BURST_POINT = 0.25;
 
-  scan_status = fscanf (fp," %le %le %le %le %le %le %le %le %le %le %le\n", &t, &V, &nK, &hNaP, &mH, &mCaT, &hCaT, &wBK, &Ca, &nMystery, &tau);
+  scan_status = fscanf (fp," %le %le %le %le %le %le %le %le %le %le %le %le\n", &t, &V, &nK, &hNaP, &mH, &mLVA1, &hLVA1, &mLVA2, &wBK, &Ca, &nMystery, &tau);
 
   if(nK > BURST_POINT)
     burst_status = 2;
@@ -65,7 +65,7 @@ void processTrace(FILE* fp, FILE* op, InputData* input_data)
 
   while(scan_status != EOF)
   {
-    scan_status = fscanf (fp," %le %le %le %le %le %le %le %le %le %le %le\n", &t, &V, &nK, &hNaP, &mH, &mCaT, &hCaT, &wBK, &Ca, &nMystery, &tau);
+    scan_status = fscanf (fp," %le %le %le %le %le %le %le %le %le %le %le %le\n", &t, &V, &nK, &hNaP, &mH, &mLVA1, &hLVA1, &mLVA2, &wBK, &Ca, &nMystery, &tau);
 
     // burst begins
     if( (prev_nK <= BURST_POINT && nK > BURST_POINT && burst_status == 0) ||
